@@ -1,0 +1,26 @@
+{
+  "name": "motion-graph-sketchpad",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run && playwright test",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@fontsource/bricolage-grotesque": "5.2.8",
+    "@fontsource/ibm-plex-mono": "5.2.6",
+    "@playwright/test": "1.58.2",
+    "@types/node": "^26.4.0",
+    "playwright-core": "^1.58.2",
+    "sharp": "^0.35.4",
+    "typescript": "5.9.2",
+    "vite": "^7.3.6",
+    "vitest": "^3.2.7"
+  }
+}
