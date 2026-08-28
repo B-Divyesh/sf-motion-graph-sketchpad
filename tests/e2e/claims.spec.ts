@@ -148,6 +148,8 @@ test('@claim:demo-four-property-sample opens the named four-property sample', as
   await page.getByRole('link', { name: 'Try it with sample data' }).click();
   await expect(page).toHaveURL(/\?demo=1$/);
   await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
+  await page.reload();
+  await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
   await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
   await expect(page.locator('[data-field="property-name"]')).toHaveCount(4);
   expect(await page.locator('[data-field="property-name"]').evaluateAll((inputs) =>
