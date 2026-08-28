@@ -1,5 +1,15 @@
 # Handoff — Motion Graph Sketchpad
 
+## Independent verification verdict (2026-08-28): **FAIL**
+
+Candidate `8f50cbd827dc7c0b8609aa00e16536899906aa64` was independently tested against the live site <https://motion-graph-sketchpad.sociobot.in>. All 11 required claim tests, the full 3-unit/14-browser test suite, build, live offline reload, axe scan, normal editing/export flows, and live-build byte comparison passed. The candidate is nevertheless **not releasable**:
+
+- **High:** central draggable keyframes are 31–35px at the required 390px mobile viewport; Reset demo/Start for real are 40px high. The product contract requires 44 × 44px touch targets.
+- **Medium:** deployed hashed JS, CSS, images, and service worker use only `Cache-Control: public, must-revalidate, max-age=30`, not long-lived immutable caching.
+- **Low:** malformed JSON receives raw parser/TypeError feedback instead of a plain validation error; direct unknown routes return HTTP 200 while rendering the client 404.
+
+See [`.factory/verification.md`](verification.md) for commands, measurements, full evidence, and remediation. Product source was not modified by verification.
+
 Completed for work order `motion-graph-sketchpad-build-1` on 2026-08-28.
 
 ## What was built
