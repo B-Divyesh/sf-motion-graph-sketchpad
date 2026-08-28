@@ -1,0 +1,12 @@
+{
+  "slug": "motion-graph-sketchpad",
+  "title": "Motion Graph Sketchpad",
+  "summary": "Sketch property motion and export ready-to-use code",
+  "territory": "games-creative",
+  "user": "Web and game creators who want to prototype animation of arbitrary visual properties before committing to code or a full timeline editor.",
+  "smallest_useful_product": "A local web canvas with 1–8 named numeric or colour properties, draggable keyframes, easing preview, and CSS/Web Animations/JSON export.",
+  "artifact_class": "static-web",
+  "monetization": "free",
+  "constraints": "Use only locally stored sketches by default; make exported code deterministic; clearly label browser support for timing functions.",
+  "state": "RESEARCHED"
+}
