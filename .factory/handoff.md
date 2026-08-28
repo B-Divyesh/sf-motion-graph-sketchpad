@@ -1,38 +1,32 @@
-# Handoff — adversarial first-read review 2
+# Handoff — polish round 2
 
-Completed for work order `motion-graph-sketchpad-review-2` on 2026-08-28.
+Completed for `motion-graph-sketchpad-polish-2` on 2026-08-28.
 
 ## Result
 
-**FAIL.** The review is recorded in `.factory/review-2.md`. No product code was modified.
+Released repair commit `f7cab95e827b47d9498938bf9c64cb74f868d25c` to <https://motion-graph-sketchpad.sociobot.in> through deployment `0f5b4a2e-6282-4f3d-bf49-3d03aae5bb16`.
 
-The review found three blocking issues: the primary action is below the first screen at 1366 × 768, the demo banner scrolls out of view, and the mobile footer Terms target remains below the previously required 44 px width. It also records route/404 metadata and skeleton defects, three claim-inventory gaps, and plain-word/terminology issues.
+The release fixes every finding recorded in `.factory/review-1.md`, `.factory/review-2.md`, `.factory/polish-1.md`, `.factory/verification.md`, and `.factory/verification-2.md`: desktop first-screen placement, persistent isolated demo identity/reset/exit, all mobile interactive target sizes, direct HTTP-404 skeleton/metadata, per-route social metadata, plain copy/terminology, and complete claim inventory/test coverage.
 
-## Verification performed
+## Exact verification evidence
 
-- Opened the live home page in fresh 390 × 844, 1366 × 768, and 1440 × 900 Chromium contexts before scrolling.
-- Exercised the one-click live demo with a pre-seeded real-storage sentinel; edited, reset, exited, and confirmed the real serialized value was unchanged.
-- Recorded the full live demo request log, confirmed no off-origin requests or console errors, and verified service-worker offline reload.
-- Crawled all live links and inspected status, title, h1, main, description, canonical, OG/Twitter metadata, favicon, header/footer, focus on navigation, Back behavior, and the real HTTP 404.
-- Ran Playwright Axe live with zero reported violations and ran `/opt/fleet/lib/verify-url.sh` successfully.
-- Cloned revision `4746a2e9fe89fc13c3421624894d1b3f9dbf961b` to `/tmp/mgs-review2-clean-hTcvTe`, ran all 14 claim commands separately, then ran the full suite and build.
+- Clean clone: `/tmp/mgs-polish2-clean`, from repair commit `f7cab95`.
+- `npm ci`: passed; `npm audit --audit-level=high`: 0 vulnerabilities.
+- Every one of the 16 commands declared in `.factory/claims.json` passed individually from the clean clone. The combined claim browser file passed 15 tests; the quality browser file passed 8 tests; the unit suite passed 7 tests. `npm test` completed from the clean clone.
+- `npm run build`: passed. `dist/` contains `index.html`, `404.html`, and `staticwebapp.config.json`; initial JS is 32.93 kB raw / 10.63 kB gzip and CSS is 20.21 kB raw / 5.33 kB gzip.
+- Local browser evidence: `/tmp/mgs-polish2-evidence/home-1366x768.png`, `/tmp/mgs-polish2-evidence/demo-390x844.png`, and `/tmp/mgs-polish2-evidence/verify.json`. The verifier reported no console errors, title/lang, one h1/main, and no missing image alt text or unlabeled buttons.
+- Live cold-browser evidence: `/tmp/mgs-polish2-live/home-1366x768.png`, `/tmp/mgs-polish2-live/demo-mobile-bottom.png`, and `/tmp/mgs-polish2-live/verify.json`. The live verifier found zero console errors. Live Axe found 0 violations. `/missing-frame` returned HTTP 404 and includes the wordmark, footer, Privacy, Terms, favicon, canonical, Open Graph/Twitter tags, one h1/main, and return link.
+- Live 1366×768 check confirmed the primary action, helper, three facts, and art are fully visible. Live 390×844 check found no horizontal overflow, no visible interactive target below 44×44 px, and the sticky demo banner/actions still visible at page bottom.
 
-Clean-clone results:
+## Run and deploy
 
-```text
-all 14 declared claim commands: PASS
-npm test: PASS (6 Vitest + 19 Chromium)
-npm run build: PASS (dist/ produced)
-initial JS: 32.31 kB raw / 10.56 kB gzip
+```sh
+npm ci
+npm test
+npm run build
+/opt/fleet/lib/deploy-static.sh motion-graph-sketchpad dist
 ```
 
-Evidence is under `/tmp/mgs-review-2/`; claim logs are `/tmp/mgs-review-2/claim-*.log`, and complete suite/build logs are `/tmp/mgs-review-2/full-test.log` and `/tmp/mgs-review-2/build.log`.
+## Known gaps
 
-## Files changed
-
-- `.factory/review-2.md`
-- `.factory/handoff.md`
-
-## Next step
-
-Repair all findings in `.factory/review-2.md`, deploy, then repeat the full review from fresh browser contexts and a clean clone. No infrastructure, DNS, billing, or deployment changes were made in this review.
+None. This is a local-first static web app; it has no accounts, analytics, payments, server-side product API, or runtime third-party requests.
