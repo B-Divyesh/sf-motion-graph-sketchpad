@@ -59,10 +59,10 @@ h3 { margin-bottom: 8px; font-size: 1.45rem; }
 .icon-button:hover { border-color: var(--danger); color: var(--danger); }
 
 .demo-banner { position: relative; z-index: 12; display: flex; min-height: 48px; align-items: center; justify-content: center; gap: 24px; padding: 4px max(20px, env(safe-area-inset-right)) 4px max(20px, env(safe-area-inset-left)); color: #171108; background: var(--amber); font-size: .78rem; }
-.demo-banner .text-button { min-height: 40px; color: #171108; font-weight: 600; }
+.demo-banner .text-button { min-height: 44px; color: #171108; font-weight: 600; }
 .demo-actions { display: flex; gap: 4px; }
 .site-header { position: relative; z-index: 10; display: flex; max-width: 1480px; min-height: 88px; align-items: center; justify-content: space-between; gap: 32px; margin: 0 auto; padding: 16px clamp(20px, 5vw, 72px); }
-.wordmark { display: inline-flex; align-items: center; gap: 11px; color: var(--text); font-family: var(--display); font-size: .88rem; line-height: 1.05; text-decoration: none; }
+.wordmark { display: inline-flex; min-height: 44px; align-items: center; gap: 11px; color: var(--text); font-family: var(--display); font-size: .88rem; line-height: 1.05; text-decoration: none; }
 .wordmark-mark { position: relative; display: block; width: 36px; height: 32px; border: 1px solid var(--line); }
 .wordmark-mark i { position: absolute; top: 13px; width: 5px; height: 5px; border: 1px solid var(--amber); background: var(--ink); transform: rotate(45deg); }
 .wordmark-mark i:nth-child(1) { left: 3px; }
@@ -131,19 +131,20 @@ input:hover, select:hover { border-color: #6d8995; }
 .rails { display: grid; min-width: 0; gap: 12px; padding: 16px 0; }
 .property-rail { min-width: 0; padding-bottom: 8px; overflow: hidden; border-bottom: 1px solid #293c45; }
 .rail-head { display: grid; grid-template-columns: minmax(140px, 240px) auto 44px; align-items: end; gap: 12px; }
-.rail-head input { min-height: 40px; }
+.rail-head input { min-height: 44px; }
 .kind-badge { align-self: center; justify-self: start; padding: 5px 8px; color: var(--cyan); border: 1px solid #315a60; font-size: .68rem; }
 .unit-control { display: flex; align-items: center; gap: 8px; align-self: center; }
-.unit-control select { width: auto; min-width: 76px; min-height: 40px; margin: 0; }
+.unit-control select { width: auto; min-width: 76px; min-height: 44px; margin: 0; }
 .track-wrap { min-width: 0; margin-top: 12px; }
-.track { position: relative; height: 76px; margin: 0 8px; border-right: 1px solid var(--line); border-left: 1px solid var(--line); touch-action: none; }
+.track { position: relative; height: 88px; margin: 0 8px; border-right: 1px solid var(--line); border-left: 1px solid var(--line); touch-action: none; }
 .track svg { position: absolute; inset: 0; width: 100%; height: 64px; overflow: visible; }
 .grid-line { fill: none; stroke: #263a43; stroke-width: .5; vector-effect: non-scaling-stroke; }
 .graph-line { fill: none; stroke: var(--cyan); stroke-width: 1.4; vector-effect: non-scaling-stroke; filter: drop-shadow(0 0 3px rgba(114,225,231,.35)); }
 .playhead { position: absolute; z-index: 2; top: 0; bottom: 0; width: 1px; background: var(--amber); pointer-events: none; }
 .playhead::before { position: absolute; top: -3px; left: -4px; width: 9px; height: 7px; background: var(--amber); content: ""; clip-path: polygon(0 0, 100% 0, 50% 100%); }
-.keyframe { position: absolute; z-index: 3; width: 22px; height: 22px; margin: 0 0 -11px -11px; border: 2px solid var(--amber); background: var(--ink); cursor: ew-resize; transform: rotate(45deg); transition: scale 140ms ease, background-color 140ms ease; touch-action: none; }
-.keyframe:hover, .keyframe.selected { background: var(--amber); scale: 1.12; }
+.keyframe { position: absolute; z-index: 3; width: 44px; height: 44px; margin: 0 0 -22px -22px; padding: 0; border: 0; background: transparent; cursor: ew-resize; touch-action: none; }
+.keyframe::before { position: absolute; top: 12px; left: 12px; width: 18px; height: 18px; border: 2px solid var(--amber); background: var(--ink); content: ""; transform: rotate(45deg); transition: scale 140ms ease, background-color 140ms ease; }
+.keyframe:hover::before, .keyframe.selected::before { background: var(--amber); scale: 1.12; }
 .time-scale { display: flex; justify-content: space-between; color: #8fa2a9; font-size: .64rem; font-variant-numeric: tabular-nums; }
 .add-frame { margin-top: 4px; font-size: .72rem; }
 .inspector { display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 12px; margin-top: 8px; padding: 16px; border: 1px solid var(--line); background: #101a20; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%); }

@@ -21,4 +21,15 @@ describe('motion model', () => {
   it('rejects unsupported sketches', () => {
     expect(() => validateSketch({ version: 2, name: 'Old', duration: 20, properties: [] })).toThrow('not supported');
   });
+
+  it('rejects structurally incomplete version 1 imports with recovery guidance', () => {
+    expect(() => validateSketch({
+      version: 1, name: 'Broken', duration: 800,
+      properties: [{ id: 'x' }],
+    })).toThrow('Property 1 needs a name');
+    expect(() => validateSketch({
+      version: 1, name: 'Broken', duration: 800,
+      properties: [{ id: 'x', name: 'X', kind: 'number', unit: '', keyframes: [] }],
+    })).toThrow('Property 1 needs at least one keyframe');
+  });
 });

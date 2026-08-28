@@ -193,11 +193,62 @@ export function exportJson(sketch: Sketch): string {
 }
 
 export function validateSketch(value: unknown): Sketch {
-  if (!value || typeof value !== 'object') throw new Error('The file does not contain a sketch. Choose a JSON export from this tool.');
-  const sketch = value as Partial<Sketch>;
-  if (sketch.version !== 1 || typeof sketch.name !== 'string' || typeof sketch.duration !== 'number' || !Array.isArray(sketch.properties)) {
-    throw new Error('The sketch format is not supported. Choose a version 1 JSON export.');
+  if (!isRecord(value)) fail('The file does not contain a sketch. Choose a JSON export from this tool.');
+  if (value.version !== 1) fail('This sketch format is not supported. Choose a version 1 JSON export.');
+  if (typeof value.name !== 'string' || !value.name.trim()) fail('The sketch needs a name. Export the sketch again, then choose that JSON file.');
+  const duration = value.duration;
+  if (!isDuration(duration)) fail('The sketch duration must be between 200 and 30,000 milliseconds. Export the sketch again, then choose that JSON file.');
+  const properties = value.properties;
+  if (!Array.isArray(properties)) fail('The sketch needs a list of properties. Export the sketch again, then choose that JSON file.');
+  if (properties.length > 8) fail('This sketch has more than eight properties. Remove extras and try again.');
+
+  const propertyIds = new Set<string>();
+  properties.forEach((property, index) => validateProperty(property, index, duration, propertyIds));
+  return cloneSketch(value as unknown as Sketch);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isDuration(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 200 && value <= 30000;
+}
+
+function fail(message: string): never {
+  throw new Error(message);
+}
+
+function validateProperty(value: unknown, index: number, duration: number, propertyIds: Set<string>) {
+  const label = `Property ${index + 1}`;
+  if (!isRecord(value)) fail(`${label} is not a property. Export the sketch again, then choose that JSON file.`);
+  if (typeof value.id !== 'string' || !value.id.trim()) fail(`${label} needs an identifier. Export the sketch again, then choose that JSON file.`);
+  if (propertyIds.has(value.id)) fail(`${label} repeats a property identifier. Export the sketch again, then choose that JSON file.`);
+  propertyIds.add(value.id);
+  if (typeof value.name !== 'string' || !value.name.trim()) fail(`${label} needs a name. Export the sketch again, then choose that JSON file.`);
+  const kind = value.kind;
+  if (kind !== 'number' && kind !== 'color') fail(`${label} must be a number or colour property. Export the sketch again, then choose that JSON file.`);
+  if (typeof value.unit !== 'string' || (kind === 'number' && !['', 'px', '%', 'deg'].includes(value.unit)) || (kind === 'color' && value.unit !== '')) {
+    fail(`${label} has an unsupported unit. Export the sketch again, then choose that JSON file.`);
   }
-  if (sketch.properties.length > 8) throw new Error('This sketch has more than eight properties. Remove extras and try again.');
-  return cloneSketch(sketch as Sketch);
+  if (!Array.isArray(value.keyframes) || value.keyframes.length === 0) fail(`${label} needs at least one keyframe. Export the sketch again, then choose that JSON file.`);
+
+  const frameIds = new Set<string>();
+  value.keyframes.forEach((frame, frameIndex) => validateKeyframe(frame, label, frameIndex, duration, kind, frameIds));
+}
+
+function validateKeyframe(value: unknown, propertyLabel: string, index: number, duration: number, kind: PropertyKind, frameIds: Set<string>) {
+  const label = `${propertyLabel}, keyframe ${index + 1}`;
+  if (!isRecord(value)) fail(`${label} is incomplete. Export the sketch again, then choose that JSON file.`);
+  if (typeof value.id !== 'string' || !value.id.trim()) fail(`${label} needs an identifier. Export the sketch again, then choose that JSON file.`);
+  if (frameIds.has(value.id)) fail(`${label} repeats a keyframe identifier. Export the sketch again, then choose that JSON file.`);
+  frameIds.add(value.id);
+  if (typeof value.time !== 'number' || !Number.isFinite(value.time) || value.time < 0 || value.time > duration) {
+    fail(`${label} has a time outside the sketch duration. Export the sketch again, then choose that JSON file.`);
+  }
+  if (kind === 'number' && (typeof value.value !== 'number' || !Number.isFinite(value.value))) fail(`${label} needs a numeric value. Export the sketch again, then choose that JSON file.`);
+  if (kind === 'color' && (typeof value.value !== 'string' || !/^#[0-9a-f]{6}$/i.test(value.value))) fail(`${label} needs a six-digit colour value. Export the sketch again, then choose that JSON file.`);
+  if (!['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'].includes(String(value.easing))) {
+    fail(`${label} has an unsupported easing. Export the sketch again, then choose that JSON file.`);
+  }
 }

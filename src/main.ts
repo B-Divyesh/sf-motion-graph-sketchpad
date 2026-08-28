@@ -11,7 +11,7 @@ import {
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const STORAGE_KEY = 'motion-graph-sketchpad:sketch:v1';
-const BUILD_ID = 'v1.0.0';
+const BUILD_ID = 'v1.0.1';
 const easings: Easing[] = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'];
 let demoMode = location.pathname === '/demo' || new URLSearchParams(location.search).get('demo') === '1';
 let sketch = demoMode ? cloneSketch(SAMPLE_SKETCH) : loadSketch();
@@ -568,7 +568,14 @@ function bindEvents() {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     try {
-      sketch = validateSketch(JSON.parse(await file.text())); selected = firstSelection(); currentTime = 0; saveSketch('JSON imported and saved'); render();
+      let imported: unknown;
+      try {
+        imported = JSON.parse(await file.text());
+      } catch {
+        announce('This file is not valid JSON. Export the sketch again, then choose that JSON file.', true);
+        return;
+      }
+      sketch = validateSketch(imported); selected = firstSelection(); currentTime = 0; saveSketch('JSON imported and saved'); render();
     } catch (error) {
       announce(error instanceof Error ? error.message : 'The file could not be read. Choose a JSON sketch export.', true);
     }
