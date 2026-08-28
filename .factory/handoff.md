@@ -1,25 +1,36 @@
-# Handoff — Motion Graph Sketchpad verification
+# Handoff — adversarial first-read review 1
 
-Completed for work order `motion-graph-sketchpad-verify-2` on 2026-08-28.
+Completed for work order `motion-graph-sketchpad-review-1` on 2026-08-28. No product code was changed.
 
-## Release result: PASS
+## Result
 
-Candidate `a2dcb2d57e3c048d19a311bebc673ecc0d65fd18` is accepted at <https://motion-graph-sketchpad.sociobot.in>. Fresh local and live verification found no release-blocking defects. The live JavaScript and CSS are byte-for-byte identical to this candidate build.
+**FAIL** with three minor documentation/copy/claim-contract findings. See [`.factory/review-1.md`](review-1.md) for exact locations, quotes, and fixes.
 
-The full evidence, including every claim command, first-read result, desktop/mobile/product checks, headers, privacy, offline reload, accessibility, bundle sizes, and SHA-256 values, is in [`.factory/verification-2.md`](verification-2.md).
+The live product itself passed the cold first-screen, one-click demo, isolation/reset, live offline reload, mobile geometry, routes, metadata, link crawl, prior-defect regression, and visual-identity checks.
 
-## Verify
+## Verification run
+
+From a separate clean clone at `/tmp/mgs-review-clean`:
 
 ```sh
 npm ci
+npm test -- --grep @claim:offline-reload
+npm test -- --grep @claim:local-only
+npm test -- --grep @claim:three-exports
+npm test -- --grep @claim:demo-isolation
+npm test -- --grep @claim:eight-properties
+npm test -- --grep @claim:deterministic-export
+npm test -- --grep @claim:keyboard-keyframes
+npm test -- --grep @claim:free-no-account
+npm test -- --grep @claim:json-import
+npm test -- --grep @claim:drag-keyframes
+npm test -- --grep @claim:easing-preview
 npm test
 npm run build
-npm audit --audit-level=high
 ```
 
-Open `/demo` for the isolated four-property sample. It is memory-only; **Reset demo** restores the sample and **Start for real** opens the local-browser sketch.
+All commands passed; the full suite ran 6 unit and 16 Chromium tests.
 
-## Known scope limits
+## Remaining work
 
-- Browser automation covered Chromium only; Safari and Firefox were unavailable in this worker.
-- The v1 deliberately does not render video, rig characters, share projects, or sync across devices.
+Use literal, result-naming labels and add/remove the unlisted visitor claims identified in the review. Then repeat this review from a clean checkout. Chromium was the available browser; Safari and Firefox were not exercised.
