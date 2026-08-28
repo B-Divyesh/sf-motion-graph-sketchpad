@@ -8,7 +8,7 @@ Audited on 2026-08-28 against the `plain-words` contract. Counts treat hyphenate
 | --- | ---: | --- |
 | Sketch property motion before coding | 5 | Pass |
 | For web and game creators testing animation without scripts or a full timeline editor. | 14 | Pass |
-| Loads a four-property motion sketch. | 5 | Pass |
+| Loads a four-property motion sketch. | 5 | Listed: `demo-four-property-sample` |
 | Works offline after the first visit. | 6 | Pass |
 | Sketches stay in this browser. | 5 | Pass |
 | Free. | 1 | Pass |
@@ -27,7 +27,7 @@ Read-aloud check: “Sketch property motion before coding. For web and game crea
 | It is selected now. | 4 | Pass |
 | Its keyframes and motion path will appear here. | 8 | Pass |
 | Output stays stable when the sketch stays the same. | 9 | Pass |
-| Exports use five standard timing function names. | 7 | Pass |
+| Choose from five standard timing functions. | 6 | Listed: `five-standard-easings` |
 | Registered custom properties need CSS.registerProperty. | 5 | Pass |
 | Add up to eight number or colour properties. | 8 | Pass |
 | Add keyframes, drag their times, and choose easing. | 8 | Pass |
@@ -37,7 +37,13 @@ Read-aloud check: “Sketch property motion before coding. For web and game crea
 | No account exists. | 3 | Pass |
 | Your real sketch uses local browser storage. | 7 | Pass |
 | Demo changes disappear when you leave. | 6 | Pass |
-| Sketch property motion and export ready-to-use code. | 7 | Pass |
+| Export CSS, Web Animations code, or JSON. | 7 | Listed: `three-exports` |
+| Test motion. Export the code. | 5 | Listed: `three-exports` |
+| This tool does not rig characters, render video, or manage teams. | 11 | Scope limit |
+| It tests plain values before you open a larger editor. | 10 | Scope limit |
+| No account exists. | 3 | Listed: `free-no-account` |
+| Your real sketch uses local browser storage. | 7 | Listed: `local-only` |
+| Demo changes disappear when you leave. | 6 | Listed: `demo-isolation` |
 
 ## States and errors
 
@@ -63,6 +69,16 @@ Read-aloud check: “Sketch property motion before coding. For web and game crea
 | Editing and exports still work. | 5 | Pass |
 
 No line exceeds 22 words. No line contains: leverage, seamless, effortless, robust, powerful, intuitive, reimagine, supercharge, unlock, delightful, journey, ecosystem, or AI-powered.
+
+## Privacy and README claims
+
+| Copy | Words | Result |
+| --- | ---: | --- |
+| The app has no accounts and makes no off-origin requests during the demo. | 12 | Listed: `no-account-demo-network` |
+| Your real sketch is saved in local browser storage. | 8 | Listed: `local-only` |
+| Demo changes use temporary memory and are discarded when you leave. | 10 | Listed: `demo-isolation` |
+| The demo makes no off-origin requests. | 6 | Listed: `no-account-demo-network` |
+| It loads the “Lantern drift” sample with four animated properties. | 10 | Listed: `demo-four-property-sample` |
 
 ## Terminology
 

@@ -11,9 +11,13 @@ import {
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const STORAGE_KEY = 'motion-graph-sketchpad:sketch:v1';
-const BUILD_ID = 'v1.0.1';
+const BUILD_ID = 'v1.0.2';
 const easings: Easing[] = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'];
-let demoMode = location.pathname === '/demo' || new URLSearchParams(location.search).get('demo') === '1';
+function isDemoLocation(locationLike: Pick<Location, 'pathname' | 'search'> = location): boolean {
+  return locationLike.pathname === '/demo' || new URLSearchParams(locationLike.search).get('demo') === '1';
+}
+
+let demoMode = isDemoLocation();
 let sketch = demoMode ? cloneSketch(SAMPLE_SKETCH) : loadSketch();
 let selected: { propertyId: string; frameId: string } | null = firstSelection();
 let currentTime = 0;
@@ -65,12 +69,12 @@ function header(): string {
     <a class="skip-link" href="#main">Skip to main content</a>
     ${demoMode && route === 'home' ? `<aside class="demo-banner" aria-label="Demo mode">
       <span><strong>Demo</strong> — sample data, nothing is saved</span>
-      <span class="demo-actions"><button class="text-button" data-action="reset-demo">Reset demo</button><button class="text-button" data-action="start-real">Start for real</button></span>
+      <span class="demo-actions"><button class="text-button" data-action="reset-demo">Reset demo</button><button class="text-button" data-action="start-real">Open my real sketch</button></span>
     </aside>` : ''}
     <header class="site-header">
       <a class="wordmark" href="/" data-route aria-label="Motion Graph Sketchpad home"><span class="wordmark-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Motion Graph<br>Sketchpad</span></a>
       <nav aria-label="Main navigation">
-        <a href="/demo" data-route>Demo</a>
+        <a href="/?demo=1" data-route>Demo</a>
         <a href="/#sketchpad">Sketchpad</a>
         <a href="/privacy" data-route>Privacy</a>
       </nav>
@@ -79,7 +83,7 @@ function header(): string {
 
 function footer(): string {
   return `<footer class="site-footer">
-    <p>Sketch property motion and export ready-to-use code.</p>
+    <p>Export CSS, Web Animations code, or JSON.</p>
     <nav aria-label="Footer navigation"><a href="/privacy" data-route>Privacy</a><a href="/terms" data-route>Terms</a><a href="https://hello-factory.sociobot.in" rel="external">Built by Param Factory <span class="sr-only">(external site)</span></a></nav>
     <p class="build">${BUILD_ID} · Original generated imagery</p>
   </footer>`;
@@ -92,7 +96,7 @@ function hero(): string {
       <h1 id="hero-title" tabindex="-1">Sketch property motion before coding</h1>
       <p class="lede">For web and game creators testing animation without scripts or a full timeline editor.</p>
       <div class="hero-action">
-        <a class="button primary" href="/demo" data-route>Try it with sample data</a>
+        <a class="button primary" href="/?demo=1" data-route>Try it with sample data</a>
         <span>Loads a four-property motion sketch.</span>
       </div>
       <ul class="plain-facts" aria-label="Product facts">
@@ -108,7 +112,7 @@ function hero(): string {
         <img src="/assets/hero-night-bay-1280.webp" width="1280" height="853" alt="A dark animation desk overlooks mountains crossed by cyan motion paths." fetchpriority="high" decoding="async">
       </picture>
       <div class="hero-curve" aria-hidden="true"><i></i><i></i><i></i></div>
-      <figcaption>Test the path. Keep the code.</figcaption>
+      <figcaption>Test motion. Export the code.</figcaption>
     </figure>
   </section>`;
 }
@@ -181,7 +185,7 @@ function exportPanel(): string {
       <button role="tab" aria-selected="${exportKind === 'waapi'}" data-export-kind="waapi">Web Animations</button>
       <button role="tab" aria-selected="${exportKind === 'json'}" data-export-kind="json">JSON</button>
     </div>
-    <div class="support-note"><strong>Browser support:</strong> Exports use five standard timing function names. Registered custom properties need CSS.registerProperty.</div>
+    <div class="support-note"><strong>Browser support:</strong> Choose from five standard timing functions. Registered custom properties need CSS.registerProperty.</div>
     <pre tabindex="0"><code>${escapeHtml(exportText())}</code></pre>
     <div class="export-actions"><button class="button primary" data-action="copy-export">Copy ${exportKind === 'waapi' ? 'Web Animations' : exportKind.toUpperCase()}</button><button class="button secondary" data-action="download-export">Download file</button></div>
   </section>`;
@@ -199,7 +203,7 @@ function previewValues(): string {
 function workbench(): string {
   const hasProperties = sketch.properties.length > 0;
   return `<section class="sketchpad-section" id="sketchpad" aria-labelledby="sketchpad-title">
-    <div class="section-heading"><div><p class="eyebrow">The sketchpad</p><h2 id="sketchpad-title">Shape the values</h2></div><p>Drag keyframes sideways. Use arrow keys for 50 ms steps.</p></div>
+    <div class="section-heading"><div><p class="eyebrow">The sketchpad</p><h2 id="sketchpad-title">Edit motion property values</h2></div><p>Drag keyframes sideways. Use arrow keys for 50 ms steps.</p></div>
     <div class="workspace">
       <div class="preview-panel">
         <div class="preview-stage" aria-label="Motion preview">
@@ -208,7 +212,7 @@ function workbench(): string {
         </div>
         <div class="transport">
           <button class="button primary compact" data-action="play">${playing ? 'Pause preview' : 'Play preview'}</button>
-          <button class="button secondary compact" data-action="restart">Restart</button>
+          <button class="button secondary compact" data-action="restart">Restart preview</button>
           <label>Playhead <input id="playhead-input" type="range" min="0" max="${sketch.duration}" value="${Math.round(currentTime)}" aria-label="Playhead in milliseconds"></label>
         </div>
         <ul class="current-values" aria-label="Current property values">${previewValues()}</ul>
@@ -219,7 +223,7 @@ function workbench(): string {
           <label>Duration <span class="input-with-unit"><input id="duration" type="number" min="200" max="30000" step="100" value="${sketch.duration}"><span>ms</span></span></label>
           <div class="file-actions"><label class="button secondary compact" for="import-file">Import JSON</label><input class="sr-only" id="import-file" type="file" accept="application/json,.json"><button class="text-button danger-text" data-action="clear-sketch">Clear sketch</button></div>
         </div>
-        <div class="add-property"><span>Add property</span><button class="button secondary compact" data-action="add-property" data-kind="number" ${sketch.properties.length >= 8 ? 'disabled' : ''}>+ Number</button><button class="button secondary compact" data-action="add-property" data-kind="color" ${sketch.properties.length >= 8 ? 'disabled' : ''}>+ Colour</button><span class="property-count">${sketch.properties.length}/8</span></div>
+        <div class="add-property"><span>Add property</span><button class="button secondary compact" data-action="add-property" data-kind="number" ${sketch.properties.length >= 8 ? 'disabled' : ''}>Add number property</button><button class="button secondary compact" data-action="add-property" data-kind="color" ${sketch.properties.length >= 8 ? 'disabled' : ''}>Add colour property</button><span class="property-count">${sketch.properties.length}/8</span></div>
         ${hasProperties ? `<div class="rails">${sketch.properties.map(propertyRail).join('')}</div>${inspector()}` : `<div class="empty-state"><div class="empty-curve" aria-hidden="true"></div><h3>Add the first property</h3><p>Its keyframes and motion path will appear here.</p><div><button class="button primary compact" data-action="add-property" data-kind="number">Add number property</button><button class="button secondary compact" data-action="add-property" data-kind="color">Add colour property</button></div></div>`}
       </div>
     </div>
@@ -231,7 +235,7 @@ function howItWorks(): string {
   return `<section class="how" aria-labelledby="how-title"><div class="section-heading"><div><p class="eyebrow">Three moves</p><h2 id="how-title">How it works</h2></div></div>
     <ol><li><span>01</span><div><h3>Name a value</h3><p>Add up to eight number or colour properties.</p></div></li><li><span>02</span><div><h3>Place the moments</h3><p>Add keyframes, drag their times, and choose easing.</p></div></li><li><span>03</span><div><h3>Take the result</h3><p>Copy CSS, Web Animations code, or stable JSON.</p></div></li></ol>
   </section>
-  <section class="boundaries" aria-labelledby="boundaries-title"><div><p class="eyebrow">A disposable motion experiment</p><h2 id="boundaries-title">Small on purpose</h2></div><p>This tool does not rig characters, render video, or manage teams. It tests plain values before you open a larger editor.</p><p>No account exists. Your real sketch uses local browser storage. Demo changes disappear when you leave.</p></section>`;
+  <section class="boundaries" aria-labelledby="boundaries-title"><div><p class="eyebrow">Tool limits</p><h2 id="boundaries-title">What this sketchpad does not do</h2></div><p>This tool does not rig characters, render video, or manage teams. It tests plain values before you open a larger editor.</p><p>No account exists. Your real sketch uses local browser storage. Demo changes disappear when you leave.</p></section>`;
 }
 
 function homePage(): string {
@@ -239,7 +243,7 @@ function homePage(): string {
 }
 
 function legalPage(kind: 'privacy' | 'terms'): string {
-  const privacy = `<p class="eyebrow">Privacy</p><h1 tabindex="-1">Your sketch stays on this device</h1><p class="lede">Motion Graph Sketchpad has no accounts, analytics, ads, or remote storage.</p><h2>What is stored</h2><p>Your real sketch is saved in local browser storage. Demo changes use temporary memory and are discarded when you leave.</p><h2>What is sent</h2><p>The app makes no data requests after its files load. Exporting creates a file or copies text on your device.</p><h2>Remove your data</h2><p>Use “Clear sketch” in the editor. You can also clear this site’s browser storage.</p><h2>Contact</h2><p>Questions can be sent to <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p>`;
+  const privacy = `<p class="eyebrow">Privacy</p><h1 tabindex="-1">Your sketch stays on this device</h1><p class="lede">The app has no accounts and makes no off-origin requests during the demo.</p><h2>What is stored</h2><p>Your real sketch is saved in local browser storage. Demo changes use temporary memory and are discarded when you leave.</p><h2>What is sent</h2><p>The demo makes no off-origin requests. Exporting creates a file or copies text on your device.</p><h2>Remove your data</h2><p>Use “Clear sketch” in the editor. You can also clear this site’s browser storage.</p><h2>Contact</h2><p>Questions can be sent to <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p>`;
   const terms = `<p class="eyebrow">Terms</p><h1 tabindex="-1">Use the sketchpad as it is</h1><p class="lede">These terms apply when you use Motion Graph Sketchpad.</p><h2>Your work</h2><p>You keep all rights to the sketches and code you create or export.</p><h2>Allowed use</h2><p>You may use the tool for personal or commercial work. Do not use it to break laws or harm other people.</p><h2>No warranty</h2><p>The tool is provided without a warranty. Check exported code before using it in production.</p><h2>Changes</h2><p>Features and these terms may change. The date below shows the latest version.</p><p>Last updated: 28 August 2026.</p>`;
   return `${header()}<main id="main" class="legal"><article>${kind === 'privacy' ? privacy : terms}</article></main>${footer()}`;
 }
@@ -296,12 +300,13 @@ function render(focusHeading = false) {
 
 function navigate(path: string) {
   history.pushState({}, '', path);
-  demoMode = path.startsWith('/demo');
+  const destination = new URL(path, location.origin);
+  demoMode = isDemoLocation(destination);
   if (demoMode) {
     sketch = cloneSketch(SAMPLE_SKETCH);
     selected = firstSelection();
     currentTime = 0;
-  } else if (path === '/') {
+  } else if (destination.pathname === '/') {
     sketch = loadSketch();
     selected = firstSelection();
     currentTime = 0;
@@ -495,7 +500,8 @@ function bindEvents() {
   document.querySelectorAll<HTMLAnchorElement>('a[data-route]').forEach((anchor) => anchor.addEventListener('click', (event) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault();
-    navigate(new URL(anchor.href).pathname);
+    const destination = new URL(anchor.href);
+    navigate(`${destination.pathname}${destination.search}`);
   }));
   document.querySelectorAll<HTMLButtonElement>('[data-action]').forEach((button) => button.addEventListener('click', () => {
     const action = button.dataset.action;
@@ -583,7 +589,7 @@ function bindEvents() {
 }
 
 window.addEventListener('popstate', () => {
-  demoMode = location.pathname === '/demo';
+  demoMode = isDemoLocation();
   sketch = demoMode ? cloneSketch(SAMPLE_SKETCH) : loadSketch();
   selected = firstSelection(); currentTime = 0; render(true);
 });

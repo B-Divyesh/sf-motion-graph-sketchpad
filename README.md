@@ -8,9 +8,9 @@ Live site: <https://motion-graph-sketchpad.sociobot.in>
 
 ## Try the isolated demo
 
-Open <https://motion-graph-sketchpad.sociobot.in/demo>. It loads the “Lantern drift” sample with four animated properties. Demo edits use memory only and disappear when you leave.
+Open <https://motion-graph-sketchpad.sociobot.in/?demo=1>. It loads the “Lantern drift” sample with four animated properties. Demo edits use memory only and disappear when you leave.
 
-Use **Reset demo** to restore the sample. Use **Start for real** to open your locally saved sketch.
+Use **Reset demo** to restore the sample. Use **Open my real sketch** to leave the demo.
 
 ## Run locally
 
@@ -21,7 +21,7 @@ npm install
 npm run dev
 ```
 
-Open `http://localhost:5173/demo` for the sample or `/` for a real sketch.
+Open `http://localhost:5173/?demo=1` for the sample or `/` for a real sketch.
 
 ## Test and build
 
@@ -52,7 +52,7 @@ Claim definitions and sandbox steps are in [`.factory/claims.json`](.factory/cla
 
 Real sketches use one localStorage key: `motion-graph-sketchpad:sketch:v1`. Demo mode does not read or write that key. The service worker caches the app shell for offline reloads after the first visit.
 
-There are no accounts, analytics, ads, external fonts, or runtime third-party scripts. See the [privacy page](https://motion-graph-sketchpad.sociobot.in/privacy).
+The app has no accounts and makes no off-origin requests during the demo. See the [privacy page](https://motion-graph-sketchpad.sociobot.in/privacy).
 
 ## Deployment
 

@@ -9,7 +9,7 @@ test('@claim:offline-reload works offline after the first visit', async ({ page,
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
-  await expect(page.getByRole('heading', { name: 'Shape the values' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Edit motion property values' })).toBeVisible();
 });
 
 test('@claim:local-only keeps the full demo flow on the same origin', async ({ page }) => {
@@ -24,8 +24,8 @@ test('@claim:local-only keeps the full demo flow on the same origin', async ({ p
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Download file' }).click();
   await downloadPromise;
-  await page.getByRole('button', { name: 'Start for real' }).click();
-  await page.getByRole('button', { name: 'Add number property' }).click();
+  await page.getByRole('button', { name: 'Open my real sketch' }).click();
+  await page.locator('[data-action="add-property"][data-kind="number"]').first().click();
   await page.getByLabel('Sketch name').fill('Saved locally');
   await page.getByLabel('Sketch name').press('Tab');
   await page.reload();
@@ -58,7 +58,7 @@ test('@claim:demo-isolation discards demo edits and avoids real storage', async 
   await page.getByLabel('Sketch name').fill('Changed demo');
   await page.getByLabel('Sketch name').press('Tab');
   expect(await page.evaluate(() => localStorage.getItem('motion-graph-sketchpad:sketch:v1'))).toBeNull();
-  await page.getByRole('button', { name: 'Start for real' }).click();
+  await page.getByRole('button', { name: 'Open my real sketch' }).click();
   await expect(page.getByLabel('Sketch name')).toHaveValue('Untitled motion');
   await page.goto('/demo');
   await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
@@ -68,11 +68,11 @@ test('@claim:eight-properties limits a real sketch to eight properties', async (
   await page.goto('/');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.getByRole('button', { name: 'Add colour property' }).click();
-  for (let index = 1; index < 8; index += 1) await page.getByRole('button', { name: '+ Number' }).click();
+  await page.locator('[data-action="add-property"][data-kind="color"]').first().click();
+  for (let index = 1; index < 8; index += 1) await page.locator('[data-action="add-property"][data-kind="number"]').click();
   await expect(page.getByText('8/8')).toBeVisible();
-  await expect(page.getByRole('button', { name: '+ Number' })).toBeDisabled();
-  await expect(page.getByRole('button', { name: '+ Colour' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Add number property' })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Add colour property' })).toBeDisabled();
   await expect(page.locator('.property-rail')).toHaveCount(8);
   await expect(page.locator('.kind-badge').first()).toHaveText('Colour');
 });
@@ -141,4 +141,43 @@ test('@claim:easing-preview changes time and object transform', async ({ page })
   await expect.poll(async () => Number(await page.locator('#current-time').textContent())).toBeGreaterThan(120);
   const after = await object.evaluate((element) => getComputedStyle(element).transform);
   expect(after).not.toBe(before);
+});
+
+test('@claim:demo-four-property-sample opens the named four-property sample', async ({ page }) => {
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Try it with sample data' }).click();
+  await expect(page).toHaveURL(/\?demo=1$/);
+  await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
+  await expect(page.locator('[data-field="property-name"]')).toHaveCount(4);
+  expect(await page.locator('[data-field="property-name"]').evaluateAll((inputs) =>
+    inputs.map((input) => (input as HTMLInputElement).value),
+  )).toEqual(['Drift X', 'Lift', 'Scale', 'Glow colour']);
+});
+
+test('@claim:five-standard-easings offers five standard timing functions', async ({ page }) => {
+  await page.goto('/demo');
+  const easing = page.getByLabel('Easing');
+  expect(await easing.locator('option').evaluateAll((options) => options.map((option) => (option as HTMLOptionElement).value)))
+    .toEqual(['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out']);
+  for (const name of ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out']) {
+    await easing.selectOption(name);
+    await expect(easing).toHaveValue(name);
+  }
+});
+
+test('@claim:no-account-demo-network has no account and makes no off-origin demo requests', async ({ page }) => {
+  const outsideRequests: string[] = [];
+  page.on('request', (request) => {
+    if (new URL(request.url()).origin !== 'http://127.0.0.1:4173') outsideRequests.push(request.url());
+  });
+  await page.goto('/demo');
+  await page.getByLabel('Sketch name').fill('Private demo');
+  await page.getByLabel('Sketch name').press('Tab');
+  await page.getByRole('tab', { name: 'JSON', exact: true }).click();
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Download file' }).click();
+  await downloadPromise;
+  await expect(page.locator('input[type="password"], [name*="account" i], [name*="email" i]')).toHaveCount(0);
+  expect(outsideRequests).toEqual([]);
 });
