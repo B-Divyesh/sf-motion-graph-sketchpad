@@ -22,7 +22,7 @@
   },
   {
     "id": "demo-isolation",
-    "claim": "Demo changes are discarded and never saved to real data",
+    "claim": "Demo changes are discarded and never read from or saved to real data",
     "where": "demo banner and privacy copy",
     "test": "npm test -- --grep @claim:demo-isolation",
     "sandbox": "fresh context; change the demo, assert no localStorage write, leave and re-enter, then assert sample is restored"
@@ -92,9 +92,23 @@
   },
   {
     "id": "no-account-demo-network",
-    "claim": "The app has no accounts and makes no off-origin requests during the demo",
+    "claim": "The app has no accounts. During the demo, it connects only to this website.",
     "where": "README data section and Privacy page",
     "test": "npm test -- --grep @claim:no-account-demo-network",
     "sandbox": "fresh browser context at /demo; edit and download sample data while intercepting requests and asserting no account controls"
+  },
+  {
+    "id": "demo-reset",
+    "claim": "Reset demo restores the original sample",
+    "where": "README and demo banner",
+    "test": "npm test -- --grep @claim:demo-reset",
+    "sandbox": "fresh browser context at ?demo=1; change the sample, press Reset demo, and assert the original name, four properties, and keyframes"
+  },
+  {
+    "id": "waapi-registers-properties",
+    "claim": "The Web Animations export registers each custom CSS property before animating it",
+    "where": "demo export support note",
+    "test": "npm test -- --grep @claim:waapi-registers-properties",
+    "sandbox": "sample sketch at ?demo=1; select Web Animations and assert each exported property has CSS.registerProperty before element.animate"
   }
 ]

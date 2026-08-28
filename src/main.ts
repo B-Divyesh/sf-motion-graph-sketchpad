@@ -11,7 +11,7 @@ import {
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const STORAGE_KEY = 'motion-graph-sketchpad:sketch:v1';
-const BUILD_ID = 'v1.0.2';
+const BUILD_ID = 'v1.0.3';
 const easings: Easing[] = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'];
 function isDemoLocation(locationLike: Pick<Location, 'pathname' | 'search'> = location): boolean {
   return locationLike.pathname === '/demo' || new URLSearchParams(locationLike.search).get('demo') === '1';
@@ -179,13 +179,13 @@ function exportText(): string {
 
 function exportPanel(): string {
   return `<section class="export-panel" aria-labelledby="export-title">
-    <div class="section-heading"><div><p class="eyebrow">Transfer the experiment</p><h3 id="export-title">Export code</h3></div><p>Output stays stable when the sketch stays the same.</p></div>
+    <div class="section-heading"><div><p class="eyebrow">Export options</p><h3 id="export-title">Export code</h3></div><p>Output stays stable when the sketch stays the same.</p></div>
     <div class="export-tabs" role="tablist" aria-label="Export format">
       <button role="tab" aria-selected="${exportKind === 'css'}" data-export-kind="css">CSS</button>
       <button role="tab" aria-selected="${exportKind === 'waapi'}" data-export-kind="waapi">Web Animations</button>
       <button role="tab" aria-selected="${exportKind === 'json'}" data-export-kind="json">JSON</button>
     </div>
-    <div class="support-note"><strong>Browser support:</strong> Choose from five standard timing functions. Registered custom properties need CSS.registerProperty.</div>
+    <div class="support-note"><strong>Browser support:</strong> Choose from five standard timing functions. The Web Animations export registers each custom CSS property before animating it.</div>
     <pre tabindex="0"><code>${escapeHtml(exportText())}</code></pre>
     <div class="export-actions"><button class="button primary" data-action="copy-export">Copy ${exportKind === 'waapi' ? 'Web Animations' : exportKind.toUpperCase()}</button><button class="button secondary" data-action="download-export">Download file</button></div>
   </section>`;
@@ -233,7 +233,7 @@ function workbench(): string {
 
 function howItWorks(): string {
   return `<section class="how" aria-labelledby="how-title"><div class="section-heading"><div><p class="eyebrow">Three moves</p><h2 id="how-title">How it works</h2></div></div>
-    <ol><li><span>01</span><div><h3>Name a value</h3><p>Add up to eight number or colour properties.</p></div></li><li><span>02</span><div><h3>Place the moments</h3><p>Add keyframes, drag their times, and choose easing.</p></div></li><li><span>03</span><div><h3>Take the result</h3><p>Copy CSS, Web Animations code, or stable JSON.</p></div></li></ol>
+    <ol><li><span>01</span><div><h3>Add a motion property</h3><p>Add up to eight number or colour properties.</p></div></li><li><span>02</span><div><h3>Set keyframe times</h3><p>Add keyframes, drag their times, and choose easing.</p></div></li><li><span>03</span><div><h3>Export animation code</h3><p>Copy CSS, Web Animations code, or stable JSON.</p></div></li></ol>
   </section>
   <section class="boundaries" aria-labelledby="boundaries-title"><div><p class="eyebrow">Tool limits</p><h2 id="boundaries-title">What this sketchpad does not do</h2></div><p>This tool does not rig characters, render video, or manage teams. It tests plain values before you open a larger editor.</p><p>No account exists. Your real sketch uses local browser storage. Demo changes disappear when you leave.</p></section>`;
 }
@@ -243,7 +243,7 @@ function homePage(): string {
 }
 
 function legalPage(kind: 'privacy' | 'terms'): string {
-  const privacy = `<p class="eyebrow">Privacy</p><h1 tabindex="-1">Your sketch stays on this device</h1><p class="lede">The app has no accounts and makes no off-origin requests during the demo.</p><h2>What is stored</h2><p>Your real sketch is saved in local browser storage. Demo changes use temporary memory and are discarded when you leave.</p><h2>What is sent</h2><p>The demo makes no off-origin requests. Exporting creates a file or copies text on your device.</p><h2>Remove your data</h2><p>Use “Clear sketch” in the editor. You can also clear this site’s browser storage.</p><h2>Contact</h2><p>Questions can be sent to <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p>`;
+  const privacy = `<p class="eyebrow">Privacy</p><h1 tabindex="-1">Your sketch stays on this device</h1><p class="lede">The app has no accounts. During the demo, it connects only to this website.</p><h2>What is stored</h2><p>Your real sketch is saved in local browser storage. Demo changes use temporary memory and are discarded when you leave.</p><h2>What is sent</h2><p>The demo connects only to this website. Exporting creates a file or copies text on your device.</p><h2>Remove your data</h2><p>Use “Clear sketch” in the editor. You can also clear this site’s browser storage.</p><h2>Contact</h2><p>Questions can be sent to <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p>`;
   const terms = `<p class="eyebrow">Terms</p><h1 tabindex="-1">Use the sketchpad as it is</h1><p class="lede">These terms apply when you use Motion Graph Sketchpad.</p><h2>Your work</h2><p>You keep all rights to the sketches and code you create or export.</p><h2>Allowed use</h2><p>You may use the tool for personal or commercial work. Do not use it to break laws or harm other people.</p><h2>No warranty</h2><p>The tool is provided without a warranty. Check exported code before using it in production.</p><h2>Changes</h2><p>Features and these terms may change. The date below shows the latest version.</p><p>Last updated: 28 August 2026.</p>`;
   return `${header()}<main id="main" class="legal"><article>${kind === 'privacy' ? privacy : terms}</article></main>${footer()}`;
 }
@@ -254,17 +254,23 @@ function notFoundPage(): string {
 
 function setMetadata() {
   const data = route === 'privacy'
-    ? ['Privacy — Motion Graph Sketchpad', 'How Motion Graph Sketchpad stores local sketches.', '/privacy']
+    ? { title: 'Privacy — Motion Graph Sketchpad', description: 'How Motion Graph Sketchpad stores local sketches.', path: '/privacy' }
     : route === 'terms'
-      ? ['Terms — Motion Graph Sketchpad', 'Terms for using Motion Graph Sketchpad.', '/terms']
+      ? { title: 'Terms — Motion Graph Sketchpad', description: 'Terms for using Motion Graph Sketchpad.', path: '/terms' }
       : route === 'not-found'
-        ? ['Page not found — Motion Graph Sketchpad', 'Return to Motion Graph Sketchpad.', location.pathname]
+        ? { title: 'Page not found — Motion Graph Sketchpad', description: 'Return to Motion Graph Sketchpad.', path: location.pathname }
         : demoMode
-          ? ['Demo — Motion Graph Sketchpad', 'Try a four-property motion sketch with sample data.', '/demo']
-          : ['Motion Graph Sketchpad — Sketch property motion', 'Sketch numeric and colour property motion, preview each change, and export CSS, Web Animations, or JSON.', '/'];
-  document.title = data[0];
-  document.querySelector<HTMLMetaElement>('meta[name="description"]')?.setAttribute('content', data[1]);
-  document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute('href', `https://motion-graph-sketchpad.sociobot.in${data[2]}`);
+          ? { title: 'Demo — Motion Graph Sketchpad', description: 'Try a four-property motion sketch with sample data.', path: '/demo' }
+          : { title: 'Motion Graph Sketchpad — Sketch property motion', description: 'Sketch numeric and colour property motion, preview each change, and export CSS, Web Animations, or JSON.', path: '/' };
+  const url = `https://motion-graph-sketchpad.sociobot.in${data.path}`;
+  document.title = data.title;
+  document.querySelector<HTMLMetaElement>('meta[name="description"]')?.setAttribute('content', data.description);
+  document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute('href', url);
+  document.querySelector<HTMLMetaElement>('meta[property="og:title"]')?.setAttribute('content', data.title);
+  document.querySelector<HTMLMetaElement>('meta[property="og:description"]')?.setAttribute('content', data.description);
+  document.querySelector<HTMLMetaElement>('meta[property="og:url"]')?.setAttribute('content', url);
+  document.querySelector<HTMLMetaElement>('meta[name="twitter:title"]')?.setAttribute('content', data.title);
+  document.querySelector<HTMLMetaElement>('meta[name="twitter:description"]')?.setAttribute('content', data.description);
 }
 
 function render(focusHeading = false) {

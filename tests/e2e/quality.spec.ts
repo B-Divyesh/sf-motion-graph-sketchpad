@@ -32,16 +32,48 @@ test('fits the 390 pixel mobile viewport', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Play preview' })).toBeVisible();
 });
 
-test('keeps primary mobile editing controls at least 44 pixels', async ({ page }) => {
+test('keeps every visible mobile interactive target at least 44 pixels', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/demo');
-  const controls = page.locator('.keyframe, .demo-actions .text-button, .rail-head input, .unit-control select');
-  const boxes = await controls.evaluateAll((elements) => elements.map((element) => {
+  const controls = page.locator('a, button, input, select, textarea, [role="button"], [role="tab"]');
+  const boxes = await controls.evaluateAll((elements) => elements.filter((element) => {
+    const style = getComputedStyle(element);
     const box = element.getBoundingClientRect();
-    return { width: box.width, height: box.height };
+    return !element.classList.contains('sr-only') && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 1 && box.height > 1;
+  }).map((element) => {
+    const box = element.getBoundingClientRect();
+    return { name: (element as HTMLElement).innerText || element.getAttribute('aria-label') || element.tagName, width: box.width, height: box.height };
   }));
-  expect(boxes.length).toBeGreaterThan(0);
-  expect(boxes.every((box) => box.width >= 44 && box.height >= 44)).toBe(true);
+  expect(boxes.length).toBeGreaterThan(20);
+  expect(boxes.filter((box) => box.width < 44 || box.height < 44)).toEqual([]);
+});
+
+test('keeps the complete desktop first action and facts above the fold', async ({ page }) => {
+  await page.setViewportSize({ width: 1366, height: 768 });
+  await page.goto('/');
+  const measurements = await page.locator('.hero-action, .plain-facts, .hero-art').evaluateAll((elements) => elements.map((element) => {
+    const box = element.getBoundingClientRect();
+    return { top: box.top, bottom: box.bottom };
+  }));
+  expect(measurements).toHaveLength(3);
+  expect(measurements.every((box) => box.top >= 0 && box.bottom <= 768)).toBe(true);
+  await expect(page.getByRole('link', { name: 'Try it with sample data' })).toBeVisible();
+  await expect(page.getByText('Loads a four-property motion sketch.')).toBeVisible();
+});
+
+test('keeps demo controls visible and keyboard reachable after scrolling', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?demo=1');
+  await page.locator('.export-panel').scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  const banner = page.locator('.demo-banner');
+  await expect(banner).toBeVisible();
+  const box = await banner.boundingBox();
+  expect(box && box.y >= 0 && box.y + box.height <= 844).toBeTruthy();
+  const reset = page.getByRole('button', { name: 'Reset demo' });
+  await reset.focus();
+  await expect(reset).toBeFocused();
+  await expect(page.getByRole('button', { name: 'Open my real sketch' })).toBeVisible();
 });
 
 test('shows plain recovery guidance for malformed JSON imports', async ({ page }) => {
@@ -60,12 +92,21 @@ test('shows plain recovery guidance for malformed JSON imports', async ({ page }
   await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
 });
 
-test('loads privacy, terms, and the styled not-found route', async ({ page }) => {
-  await page.goto('/privacy');
-  await expect(page).toHaveTitle('Privacy — Motion Graph Sketchpad');
-  await expect(page.locator('h1')).toHaveText('Your sketch stays on this device');
-  await page.goto('/terms');
-  await expect(page).toHaveTitle('Terms — Motion Graph Sketchpad');
-  await page.goto('/missing-frame');
-  await expect(page.locator('h1')).toHaveText('This frame does not exist');
+test('sets route-specific metadata on every client route', async ({ page }) => {
+  const routes = [
+    ['/demo', 'Demo — Motion Graph Sketchpad', 'Try a four-property motion sketch with sample data.', '/demo'],
+    ['/privacy', 'Privacy — Motion Graph Sketchpad', 'How Motion Graph Sketchpad stores local sketches.', '/privacy'],
+    ['/terms', 'Terms — Motion Graph Sketchpad', 'Terms for using Motion Graph Sketchpad.', '/terms'],
+  ] as const;
+  for (const [path, title, description, canonicalPath] of routes) {
+    await page.goto(path);
+    await expect(page).toHaveTitle(title);
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', description);
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://motion-graph-sketchpad.sociobot.in${canonicalPath}`);
+    await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', title);
+    await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', description);
+    await expect(page.locator('meta[property="og:url"]')).toHaveAttribute('content', `https://motion-graph-sketchpad.sociobot.in${canonicalPath}`);
+    await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute('content', title);
+    await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute('content', description);
+  }
 });

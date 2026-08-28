@@ -1,6 +1,6 @@
 # Demo sandbox
 
-- URL: `https://motion-graph-sketchpad.sociobot.in/?demo=1` (also `/demo`; local: `http://127.0.0.1:4173/?demo=1`).
+- URL: `https://motion-graph-sketchpad.sociobot.in/?demo=1` (also `/demo`; local: `http://127.0.0.1:4173/?demo=1`). Opening either URL enters the isolated sample directly.
 - Sample: “Lantern drift,” a 2.4 second sketch with Drift X, Lift, Scale, and Glow colour properties.
 - Reset: choose **Reset demo** in the persistent amber banner.
 - Exit: choose **Open my real sketch**. Demo changes are discarded.

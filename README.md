@@ -46,13 +46,13 @@ Claim definitions and sandbox steps are in [`.factory/claims.json`](.factory/cla
 - Focus a keyframe and press Left or Right Arrow for a 50 ms step.
 - Hold Shift while pressing an arrow key for a 250 ms step.
 - Choose an easing name in the selected keyframe panel.
-- Import a JSON sketch or download CSS, JavaScript, and JSON files.
+- Import a JSON sketch or download CSS, Web Animations, and JSON files.
 
 ## Data and offline use
 
-Real sketches use one localStorage key: `motion-graph-sketchpad:sketch:v1`. Demo mode does not read or write that key. The service worker caches the app shell for offline reloads after the first visit.
+Real sketches use one localStorage key: `motion-graph-sketchpad:sketch:v1`. Demo mode does not read or write that key. After one online visit, the browser stores the files needed to reopen the app offline.
 
-The app has no accounts and makes no off-origin requests during the demo. See the [privacy page](https://motion-graph-sketchpad.sociobot.in/privacy).
+The app has no accounts. During the demo, it connects only to this website. See the [privacy page](https://motion-graph-sketchpad.sociobot.in/privacy).
 
 ## Deployment
 

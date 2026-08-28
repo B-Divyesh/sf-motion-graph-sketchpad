@@ -53,14 +53,19 @@ test('@claim:three-exports creates CSS, Web Animations, and valid JSON', async (
   expect(download.suggestedFilename()).toBe('lantern-drift.json');
 });
 
-test('@claim:demo-isolation discards demo edits and avoids real storage', async ({ page }) => {
-  await page.goto('/demo');
+test('@claim:demo-isolation discards demo edits and never reads or writes real storage', async ({ page }) => {
+  const realSketch = JSON.stringify({ version: 1, name: 'Real sentinel', duration: 800, properties: [] });
+  await page.goto('/');
+  await page.evaluate((value) => localStorage.setItem('motion-graph-sketchpad:sketch:v1', value), realSketch);
+  await page.goto('/?demo=1');
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
   await page.getByLabel('Sketch name').fill('Changed demo');
   await page.getByLabel('Sketch name').press('Tab');
-  expect(await page.evaluate(() => localStorage.getItem('motion-graph-sketchpad:sketch:v1'))).toBeNull();
+  expect(await page.evaluate(() => localStorage.getItem('motion-graph-sketchpad:sketch:v1'))).toBe(realSketch);
   await page.getByRole('button', { name: 'Open my real sketch' }).click();
-  await expect(page.getByLabel('Sketch name')).toHaveValue('Untitled motion');
-  await page.goto('/demo');
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Real sentinel');
+  expect(await page.evaluate(() => localStorage.getItem('motion-graph-sketchpad:sketch:v1'))).toBe(realSketch);
+  await page.goto('/?demo=1');
   await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
 });
 
@@ -182,4 +187,25 @@ test('@claim:no-account-demo-network has no account and makes no off-origin demo
   await downloadPromise;
   await expect(page.locator('input[type="password"], [name*="account" i], [name*="email" i]')).toHaveCount(0);
   expect(outsideRequests).toEqual([]);
+});
+
+test('@claim:demo-reset restores the original sample', async ({ page }) => {
+  await page.goto('/?demo=1');
+  await page.getByLabel('Sketch name').fill('Changed demo');
+  await page.getByLabel('Sketch name').press('Tab');
+  await page.getByRole('button', { name: 'Reset demo' }).click();
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
+  await expect(page.locator('[data-field="property-name"]')).toHaveCount(4);
+  await expect(page.locator('.keyframe')).toHaveCount(12);
+});
+
+test('@claim:waapi-registers-properties exports property registration before animation', async ({ page }) => {
+  await page.goto('/?demo=1');
+  await page.getByRole('tab', { name: 'Web Animations', exact: true }).click();
+  const code = await page.locator('.export-panel code').innerText();
+  for (const property of ['--drift-x-1', '--lift-2', '--scale-3', '--glow-colour-4']) {
+    const registration = code.indexOf(`CSS.registerProperty({ name: '${property}'`);
+    expect(registration).toBeGreaterThanOrEqual(0);
+    expect(code.indexOf('element.animate', registration)).toBeGreaterThan(registration);
+  }
 });

@@ -21,4 +21,19 @@ describe('Static Web Apps response policy', () => {
       .toEqual(['/demo', '/privacy', '/terms']);
     expect(config.responseOverrides['404']).toEqual({ rewrite: '/404.html' });
   });
+
+  it('ships a complete, metadata-rich 404 shell for direct HTTP 404 responses', () => {
+    const page = readFileSync('public/404.html', 'utf8');
+    expect(page).toContain('<header>');
+    expect(page).toContain('<footer>');
+    expect(page).toContain('href="/privacy"');
+    expect(page).toContain('href="/terms"');
+    expect(page).toContain('href="/favicon.svg"');
+    expect(page).toContain('rel="canonical"');
+    expect(page).toContain('property="og:title"');
+    expect(page).toContain('name="twitter:title"');
+    expect(page).toContain('<main id="main">');
+    expect(page).toContain('<h1 tabindex="-1">This frame does not exist</h1>');
+    expect(page).toContain('Return to the sketchpad');
+  });
 });

@@ -28,7 +28,7 @@ Read-aloud check: “Sketch property motion before coding. For web and game crea
 | Its keyframes and motion path will appear here. | 8 | Pass |
 | Output stays stable when the sketch stays the same. | 9 | Pass |
 | Choose from five standard timing functions. | 6 | Listed: `five-standard-easings` |
-| Registered custom properties need CSS.registerProperty. | 5 | Pass |
+| The Web Animations export registers each custom CSS property before animating it. | 11 | Listed: `waapi-registers-properties` |
 | Add up to eight number or colour properties. | 8 | Pass |
 | Add keyframes, drag their times, and choose easing. | 8 | Pass |
 | Copy CSS, Web Animations code, or stable JSON. | 8 | Pass |
@@ -39,6 +39,10 @@ Read-aloud check: “Sketch property motion before coding. For web and game crea
 | Demo changes disappear when you leave. | 6 | Pass |
 | Export CSS, Web Animations code, or JSON. | 7 | Listed: `three-exports` |
 | Test motion. Export the code. | 5 | Listed: `three-exports` |
+| Add a motion property | 5 | Pass heading |
+| Set keyframe times | 3 | Pass heading |
+| Export animation code | 3 | Pass heading |
+| Export options | 2 | Pass section label |
 | This tool does not rig characters, render video, or manage teams. | 11 | Scope limit |
 | It tests plain values before you open a larger editor. | 10 | Scope limit |
 | No account exists. | 3 | Listed: `free-no-account` |
@@ -74,11 +78,14 @@ No line exceeds 22 words. No line contains: leverage, seamless, effortless, robu
 
 | Copy | Words | Result |
 | --- | ---: | --- |
-| The app has no accounts and makes no off-origin requests during the demo. | 12 | Listed: `no-account-demo-network` |
+| The app has no accounts. | 5 | Listed: `no-account-demo-network` |
+| During the demo, it connects only to this website. | 9 | Listed: `no-account-demo-network` |
 | Your real sketch is saved in local browser storage. | 8 | Listed: `local-only` |
 | Demo changes use temporary memory and are discarded when you leave. | 10 | Listed: `demo-isolation` |
-| The demo makes no off-origin requests. | 6 | Listed: `no-account-demo-network` |
+| The demo connects only to this website. | 7 | Listed: `no-account-demo-network` |
 | It loads the “Lantern drift” sample with four animated properties. | 10 | Listed: `demo-four-property-sample` |
+| Use Reset demo to restore the sample. | 7 | Listed: `demo-reset` |
+| After one online visit, the browser stores the files needed to reopen the app offline. | 15 | Listed: `offline-reload` |
 
 ## Terminology
 
@@ -92,4 +99,4 @@ No line exceeds 22 words. No line contains: leverage, seamless, effortless, robu
 | Temporary sample workspace | demo |
 | CSS browser animation interface | Web Animations |
 
-Catalog description: “Sketch property motion and export ready-to-use code” — 7 words, 51 characters, verb-first.
+Catalog description: “Sketch motion properties and export CSS, Web Animations code, or JSON.” — 10 words, 69 characters, verb-first.
