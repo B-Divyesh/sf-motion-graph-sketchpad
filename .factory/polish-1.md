@@ -26,7 +26,7 @@
 
 ## Full acceptance evidence
 
-- Clean clone `/tmp/mgs-polish-clean-UwKNQi`: `npm ci`, all 14 `claims.json` commands, `npm test`, `npm run build`, and `npm audit --audit-level=high` passed.
+- Final clean clone `/tmp/mgs-final-clean-5RqUBG`: `npm ci`, all 14 `claims.json` commands, `npm test`, `npm run build`, and `npm audit --audit-level=high` passed.
 - Claim-tag audit: exactly one test per declared claim.
 - Local `verify-url.sh` passed at `http://127.0.0.1:4173/?demo=1` with no console errors and valid title/lang/main/h1/alt/button checks.
 - Live cold-browser review: 0 Axe violations, no off-origin requests, real route titles and focus announcement, service-worker offline demo reload, and all linked first-party routes checked 200 except the intentional 404.

@@ -20,7 +20,7 @@ The complete finding-to-evidence map is in [`.factory/polish-1.md`](polish-1.md)
 
 ## Exact verification evidence
 
-Clean checkout: `/tmp/mgs-polish-clean-UwKNQi` cloned from `23ae366`.
+Final clean checkout: `/tmp/mgs-final-clean-5RqUBG` cloned from `a19d27f`.
 
 ```sh
 npm ci                         # pass; 0 vulnerabilities
@@ -30,7 +30,7 @@ npm run build                  # pass; dist/index.html produced
 npm audit --audit-level=high   # pass; 0 vulnerabilities
 ```
 
-All 14 declared claim commands passed independently. A tag audit found exactly one matching `@claim:<id>` test per claim. Individual logs are `/tmp/mgs-*.log` in this worker.
+All 14 declared claim commands passed independently. A tag audit found exactly one matching `@claim:<id>` test per claim. Individual logs are `/tmp/mgs-final-*.log` in this worker.
 
 The built initial bundle is `dist/assets/index-DQABXrZC.js`: 32.31 kB raw / 10.56 kB gzip. CSS is 19.61 kB raw / 5.19 kB gzip. Both are within the static-product budgets.
 
