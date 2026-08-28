@@ -1,0 +1,79 @@
+[
+  {
+    "id": "offline-reload",
+    "claim": "Works offline after the first visit",
+    "where": "landing facts",
+    "test": "npm test -- --grep @claim:offline-reload",
+    "sandbox": "fresh browser context at /demo; wait for service worker, reload once, set offline, then reload"
+  },
+  {
+    "id": "local-only",
+    "claim": "Sketches stay in this browser",
+    "where": "landing facts and privacy page",
+    "test": "npm test -- --grep @claim:local-only",
+    "sandbox": "fresh browser context at /demo; intercept the full edit and export flow and require same-origin requests only"
+  },
+  {
+    "id": "three-exports",
+    "claim": "Exports CSS, Web Animations code, and JSON",
+    "where": "editor and how it works",
+    "test": "npm test -- --grep @claim:three-exports",
+    "sandbox": "sample sketch at /demo; assert deterministic content in all three export tabs and a valid JSON download"
+  },
+  {
+    "id": "demo-isolation",
+    "claim": "Demo changes are discarded and never saved to real data",
+    "where": "demo banner and privacy copy",
+    "test": "npm test -- --grep @claim:demo-isolation",
+    "sandbox": "fresh context; change the demo, assert no localStorage write, leave and re-enter, then assert sample is restored"
+  },
+  {
+    "id": "eight-properties",
+    "claim": "Supports up to eight number or colour properties",
+    "where": "editor and how it works",
+    "test": "npm test -- --grep @claim:eight-properties",
+    "sandbox": "fresh real sketch; add eight properties, assert the count and disabled add controls"
+  },
+  {
+    "id": "deterministic-export",
+    "claim": "Output stays stable when the sketch stays the same",
+    "where": "export panel",
+    "test": "npm test -- --grep @claim:deterministic-export",
+    "sandbox": "sample sketch at /demo; record all export text, reload the same sample, and require byte-for-byte equality"
+  },
+  {
+    "id": "keyboard-keyframes",
+    "claim": "Arrow keys move keyframes by 50 ms; Shift and an arrow move them by 250 ms",
+    "where": "sketchpad heading and README",
+    "test": "npm test -- --grep @claim:keyboard-keyframes",
+    "sandbox": "sample sketch at /demo; focus the first keyframe, press ArrowRight, and assert its time changes from 0 to 50 ms"
+  },
+  {
+    "id": "free-no-account",
+    "claim": "Free. No account.",
+    "where": "landing facts",
+    "test": "npm test -- --grep @claim:free-no-account",
+    "sandbox": "fresh browser context; assert the claim is visible and no password, sign-in, checkout, or payment control exists"
+  },
+  {
+    "id": "json-import",
+    "claim": "Imports a JSON sketch",
+    "where": "editor and README",
+    "test": "npm test -- --grep @claim:json-import",
+    "sandbox": "sample sketch at /demo; import a valid version 1 fixture and assert its name and property appear"
+  },
+  {
+    "id": "drag-keyframes",
+    "claim": "Dragging a keyframe changes its time",
+    "where": "sketchpad heading and README",
+    "test": "npm test -- --grep @claim:drag-keyframes",
+    "sandbox": "sample sketch at /demo; drag the first keyframe right and assert its accessible time changes"
+  },
+  {
+    "id": "easing-preview",
+    "claim": "Previews property motion and easing",
+    "where": "landing and README",
+    "test": "npm test -- --grep @claim:easing-preview",
+    "sandbox": "sample sketch at /demo; play the preview and assert time and the preview object's computed transform both change"
+  }
+]
