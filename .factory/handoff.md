@@ -1,56 +1,38 @@
-# Handoff — polish round 1
+# Handoff — adversarial first-read review 2
 
-Completed for work order `motion-graph-sketchpad-polish-1` on 2026-08-28.
+Completed for work order `motion-graph-sketchpad-review-2` on 2026-08-28.
 
 ## Result
 
-All findings from the adversarial review and earlier verification records are resolved or revalidated on the deployed site. The product repair is commit `23ae3666a45205012bf3aefb586ab5fc555e4b3f` (`fix: complete review copy and claim coverage`), pushed to `main` and deployed as Azure Static Web Apps deployment `74bb2450-49c1-43bd-aed9-cb70596b4300`.
+**FAIL.** The review is recorded in `.factory/review-2.md`. No product code was modified.
 
-The live site is <https://motion-graph-sketchpad.sociobot.in>. The isolated one-click demo is <https://motion-graph-sketchpad.sociobot.in/?demo=1>; `/demo` remains supported.
+The review found three blocking issues: the primary action is below the first screen at 1366 × 768, the demo banner scrolls out of view, and the mobile footer Terms target remains below the previously required 44 px width. It also records route/404 metadata and skeleton defects, three claim-inventory gaps, and plain-word/terminology issues.
 
-## What changed
+## Verification performed
 
-- Replaced ambiguous headings, hero caption, and action labels with literal result-naming copy.
-- Made the first-screen demo action use `?demo=1`; it opens the memory-only sample with the persistent banner, reset, and real-sketch exit.
-- Added the required claim inventory and observable tests for the four-property sample, five timing choices, and no-account/no-off-origin-demo-network statement.
-- Rewrote README and privacy copy to use only testable privacy claims.
-- Updated the catalog description, demo documentation, and copy audit.
+- Opened the live home page in fresh 390 × 844, 1366 × 768, and 1440 × 900 Chromium contexts before scrolling.
+- Exercised the one-click live demo with a pre-seeded real-storage sentinel; edited, reset, exited, and confirmed the real serialized value was unchanged.
+- Recorded the full live demo request log, confirmed no off-origin requests or console errors, and verified service-worker offline reload.
+- Crawled all live links and inspected status, title, h1, main, description, canonical, OG/Twitter metadata, favicon, header/footer, focus on navigation, Back behavior, and the real HTTP 404.
+- Ran Playwright Axe live with zero reported violations and ran `/opt/fleet/lib/verify-url.sh` successfully.
+- Cloned revision `4746a2e9fe89fc13c3421624894d1b3f9dbf961b` to `/tmp/mgs-review2-clean-hTcvTe`, ran all 14 claim commands separately, then ran the full suite and build.
 
-The complete finding-to-evidence map is in [`.factory/polish-1.md`](polish-1.md).
+Clean-clone results:
 
-## Exact verification evidence
-
-Final clean checkout: `/tmp/mgs-final-clean-5RqUBG` cloned from `a19d27f`.
-
-```sh
-npm ci                         # pass; 0 vulnerabilities
-# every test command in .factory/claims.json, individually
-npm test                       # pass: 6 Vitest + 19 Chromium tests
-npm run build                  # pass; dist/index.html produced
-npm audit --audit-level=high   # pass; 0 vulnerabilities
+```text
+all 14 declared claim commands: PASS
+npm test: PASS (6 Vitest + 19 Chromium)
+npm run build: PASS (dist/ produced)
+initial JS: 32.31 kB raw / 10.56 kB gzip
 ```
 
-All 14 declared claim commands passed independently. A tag audit found exactly one matching `@claim:<id>` test per claim. Individual logs are `/tmp/mgs-final-*.log` in this worker.
+Evidence is under `/tmp/mgs-review-2/`; claim logs are `/tmp/mgs-review-2/claim-*.log`, and complete suite/build logs are `/tmp/mgs-review-2/full-test.log` and `/tmp/mgs-review-2/build.log`.
 
-The built initial bundle is `dist/assets/index-DQABXrZC.js`: 32.31 kB raw / 10.56 kB gzip. CSS is 19.61 kB raw / 5.19 kB gzip. Both are within the static-product budgets.
+## Files changed
 
-`/opt/fleet/lib/verify-url.sh 'http://127.0.0.1:4173/?demo=1' /tmp/mgs-evidence/local` passed with title, `lang=en`, one `h1`, one `main`, zero missing image alt attributes, zero unlabeled buttons, and zero console errors. Local screenshots are `/tmp/mgs-evidence/local/screenshot-desktop.png` and `/tmp/mgs-evidence/local/screenshot-mobile.png`.
+- `.factory/review-2.md`
+- `.factory/handoff.md`
 
-Live cold-browser review passed with no off-origin requests, 0 Axe violations, 21 tested mobile controls at least 44×44 px, no horizontal overflow, and screenshots at `/tmp/mgs-evidence/live/demo-desktop.png` and `/tmp/mgs-evidence/live/demo-mobile.png`. A second live check confirmed plain malformed-import recovery, focus and polite announcement after client routing, service-worker control, and offline demo reload.
+## Next step
 
-Live response checks: `/`, `/?demo=1`, `/demo`, `/privacy`, `/terms`, robots, sitemap, favicon, and Apple touch icon return 200; `/missing-frame` returns 404. Hashed JS returns `Cache-Control: public, max-age=31536000, immutable`; `sw.js` returns `no-cache, no-store, must-revalidate`.
-
-## Run and deploy
-
-```sh
-npm ci
-npm run dev
-npm test
-npm run build
-```
-
-Deploy `dist/` as the static app output. The supplied `public/staticwebapp.config.json` is copied to `dist/` by Vite and provides the supported-route rewrites, designed HTTP 404, headers, and asset caching.
-
-## Known gaps / next steps
-
-None. Chromium is the browser available in this worker; Safari and Firefox were not available for manual browser testing.
+Repair all findings in `.factory/review-2.md`, deploy, then repeat the full review from fresh browser contexts and a clean clone. No infrastructure, DNS, billing, or deployment changes were made in this review.
