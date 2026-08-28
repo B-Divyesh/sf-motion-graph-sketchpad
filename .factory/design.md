@@ -42,7 +42,7 @@ This is intentionally a single dark treatment. A bright theme would weaken the p
 
 - Signature motion: the preview object crosses a shallow illustrated landscape while its graph playhead sweeps in sync. It only runs after Play.
 - UI transitions last 180–240 ms and use opacity or transforms.
-- Nothing loops. The hero specimen plays once on load and has a visible replay control.
+- Nothing loops. The decorative hero curve draws once on load.
 - With `prefers-reduced-motion: reduce`, the hero is static, transitions are instant, and preview playback steps to the end without travel. All editing remains available.
 
 ## Asset plan and prompt sheet

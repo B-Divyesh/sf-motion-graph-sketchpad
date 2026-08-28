@@ -139,7 +139,7 @@ function propertyRail(property: MotionProperty): string {
   return `<article class="property-rail" data-property="${property.id}">
     <div class="rail-head">
       <label><span>Property name</span><input data-field="property-name" data-property-id="${property.id}" value="${escapeHtml(property.name)}" maxlength="28"></label>
-      <span class="kind-badge">${property.kind === 'color' ? 'Colour' : `Number${property.unit ? ` · ${escapeHtml(property.unit)}` : ''}`}</span>
+      ${property.kind === 'color' ? '<span class="kind-badge">Colour</span>' : `<label class="unit-control"><span>Unit</span><select data-field="property-unit" data-property-id="${property.id}" aria-label="Unit for ${escapeHtml(property.name)}"><option value="" ${property.unit === '' ? 'selected' : ''}>None</option><option value="px" ${property.unit === 'px' ? 'selected' : ''}>px</option><option value="%" ${property.unit === '%' ? 'selected' : ''}>%</option><option value="deg" ${property.unit === 'deg' ? 'selected' : ''}>deg</option></select></label>`}
       <button class="icon-button danger" data-action="remove-property" data-property-id="${property.id}" aria-label="Remove ${escapeHtml(property.name)}">×</button>
     </div>
     <div class="track-wrap">
@@ -181,7 +181,7 @@ function exportPanel(): string {
       <button role="tab" aria-selected="${exportKind === 'waapi'}" data-export-kind="waapi">Web Animations</button>
       <button role="tab" aria-selected="${exportKind === 'json'}" data-export-kind="json">JSON</button>
     </div>
-    <div class="support-note"><strong>Browser support:</strong> CSS and Web Animations exports use standard timing functions. Registered custom properties need current browsers.</div>
+    <div class="support-note"><strong>Browser support:</strong> Exports use five standard timing function names. Registered custom properties need CSS.registerProperty.</div>
     <pre tabindex="0"><code>${escapeHtml(exportText())}</code></pre>
     <div class="export-actions"><button class="button primary" data-action="copy-export">Copy ${exportKind === 'waapi' ? 'Web Animations' : exportKind.toUpperCase()}</button><button class="button secondary" data-action="download-export">Download file</button></div>
   </section>`;
@@ -546,6 +546,10 @@ function bindEvents() {
   document.querySelectorAll<HTMLInputElement>('[data-field="property-name"]').forEach((input) => input.addEventListener('change', () => {
     const property = sketch.properties.find((item) => item.id === input.dataset.propertyId);
     if (property) { property.name = input.value.trim() || 'Untitled property'; saveSketch(); render(); }
+  }));
+  document.querySelectorAll<HTMLSelectElement>('[data-field="property-unit"]').forEach((input) => input.addEventListener('change', () => {
+    const property = sketch.properties.find((item) => item.id === input.dataset.propertyId);
+    if (property) { property.unit = input.value; saveSketch(); render(); }
   }));
   document.querySelector<HTMLInputElement>('#playhead-input')?.addEventListener('input', (event) => {
     currentTime = Number((event.target as HTMLInputElement).value); updatePreview();
