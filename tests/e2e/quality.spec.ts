@@ -1,20 +1,27 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
-test('has route metadata, landmarks, and no serious accessibility findings', async ({ page }) => {
-  const errors: string[] = [];
-  page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-  for (const path of ['/', '/demo', '/privacy', '/terms']) {
+const accessibilityRoutes = [
+  ['home', '/', 'Motion Graph Sketchpad — Sketch property motion'],
+  ['demo', '/demo', 'Demo — Motion Graph Sketchpad'],
+  ['privacy', '/privacy', 'Privacy — Motion Graph Sketchpad'],
+  ['terms', '/terms', 'Terms — Motion Graph Sketchpad'],
+] as const;
+
+for (const [name, path, title] of accessibilityRoutes) {
+  test(`has metadata, landmarks, and no serious accessibility findings on ${name}`, async ({ page }) => {
+    const errors: string[] = [];
+    page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
     await page.goto(path);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('main')).toHaveCount(1);
     await expect(page.locator('h1')).toHaveCount(1);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
-  }
-  await expect(page).toHaveTitle('Terms — Motion Graph Sketchpad');
-  expect(errors).toEqual([]);
-});
+    await expect(page).toHaveTitle(title);
+    expect(errors).toEqual([]);
+  });
+}
 
 test('@claim:keyboard-keyframes supports keyboard keyframe editing', async ({ page }) => {
   await page.goto('/demo');
@@ -140,6 +147,31 @@ test('shows plain recovery guidance for malformed JSON imports', async ({ page }
   });
   await expect(page.locator('#app-status')).toContainText('Property 1 needs a name');
   await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
+});
+
+test('shows keyboard focus on the visible Import JSON label', async ({ page }) => {
+  await page.goto('/demo');
+  await page.getByLabel('Duration').focus();
+  await page.keyboard.press('Tab');
+
+  const input = page.locator('#import-file');
+  const visibleLabel = page.locator('label[for="import-file"]');
+  await expect(input).toBeFocused();
+  await expect(visibleLabel).toBeVisible();
+  await expect(visibleLabel).toHaveCSS('outline-style', 'solid');
+  await expect(visibleLabel).toHaveCSS('outline-width', '3px');
+  await expect(visibleLabel).toHaveCSS('outline-color', 'rgb(114, 225, 231)');
+});
+
+test('explains and corrects a zero duration', async ({ page }) => {
+  await page.goto('/demo');
+  const duration = page.getByLabel('Duration');
+  await duration.fill('0');
+  await duration.press('Tab');
+
+  await expect(duration).toHaveValue('200');
+  await expect(page.locator('#app-status')).toHaveText('Duration must be between 200 and 30,000 ms. It was set to 200 ms.');
+  await expect(page.locator('#app-status')).toHaveClass(/error/);
 });
 
 test('sets route-specific metadata on every client route', async ({ page }) => {

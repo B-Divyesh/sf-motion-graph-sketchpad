@@ -85,6 +85,8 @@ At 390 × 844, the banner, sample name, four property inputs, and preview contro
 | Remove extras and try again. | 5 | Pass |
 | The file could not be read. | 6 | Pass |
 | Choose a JSON sketch export. | 5 | Pass |
+| Duration must be between 200 and 30,000 ms. | 8 | Pass |
+| It was set to 200 ms. | 6 | Pass |
 | Offline setup failed. | 3 | Pass |
 | Reload while online to try again. | 6 | Pass |
 | You are offline. | 3 | Pass |

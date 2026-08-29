@@ -11,7 +11,7 @@ import {
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const STORAGE_KEY = 'motion-graph-sketchpad:sketch:v1';
-const BUILD_ID = 'v1.0.7';
+const BUILD_ID = 'v1.0.8';
 const easings: Easing[] = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'];
 const exportKinds = ['css', 'waapi', 'json'] as const;
 type ExportKind = typeof exportKinds[number];
@@ -252,7 +252,7 @@ function workbench(): string {
         <div class="sketch-settings">
           ${demoMode ? '' : `<label>Sketch name <input id="sketch-name" value="${escapeHtml(sketch.name)}" maxlength="48"></label>`}
           <label>Duration <span class="input-with-unit"><input id="duration" type="number" min="200" max="30000" step="100" value="${sketch.duration}"><span>ms</span></span></label>
-          <div class="file-actions"><label class="button secondary compact" for="import-file">Import JSON</label><input class="sr-only" id="import-file" type="file" accept="application/json,.json"><button class="text-button danger-text" data-action="clear-sketch">Clear sketch</button></div>
+          <div class="file-actions"><input class="sr-only" id="import-file" type="file" accept="application/json,.json"><label class="button secondary compact" for="import-file">Import JSON</label><button class="text-button danger-text" data-action="clear-sketch">Clear sketch</button></div>
         </div>
         <div class="add-property"><span>Add property</span><button class="button secondary compact" data-action="add-property" data-kind="number" ${sketch.properties.length >= 8 ? 'disabled' : ''}>Add number property</button><button class="button secondary compact" data-action="add-property" data-kind="color" ${sketch.properties.length >= 8 ? 'disabled' : ''}>Add colour property</button><span class="property-count">${sketch.properties.length}/8</span></div>
         ${hasProperties ? `<div class="rails">${sketch.properties.map((property) => propertyRail(property, !demoMode)).join('')}</div>${inspector()}` : `<div class="empty-state"><div class="empty-curve" aria-hidden="true"></div><h3>Add the first property</h3><p>Its keyframes and motion path will appear here.</p><div><button class="button primary compact" data-action="add-property" data-kind="number">Add number property</button><button class="button secondary compact" data-action="add-property" data-kind="color">Add colour property</button></div></div>`}
@@ -596,10 +596,15 @@ function bindEvents() {
   });
   document.querySelector<HTMLInputElement>('#duration')?.addEventListener('change', (event) => {
     const previous = sketch.duration;
-    sketch.duration = Math.max(200, Math.min(30000, Number((event.target as HTMLInputElement).value) || previous));
+    const requested = Number((event.target as HTMLInputElement).value);
+    sketch.duration = Number.isFinite(requested) ? Math.max(200, Math.min(30000, requested)) : previous;
+    const correction = requested < 200 || requested > 30000
+      ? `Duration must be between 200 and 30,000 ms. It was set to ${sketch.duration.toLocaleString('en-US')} ms.`
+      : null;
     const ratio = sketch.duration / previous;
     sketch.properties.forEach((property) => property.keyframes.forEach((frame) => { frame.time = Math.round(frame.time * ratio); }));
     currentTime = Math.min(currentTime * ratio, sketch.duration); saveSketch(); render();
+    if (correction) announce(correction, true);
   });
   document.querySelectorAll<HTMLInputElement>('[data-field="property-name"]').forEach((input) => input.addEventListener('change', () => {
     const property = sketch.properties.find((item) => item.id === input.dataset.propertyId);
