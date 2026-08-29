@@ -1,29 +1,31 @@
-# Handoff — independent verification 4
+# Handoff — adversarial first-read review 6
 
 ## Result
 
-**PASS.** Candidate `f2ead240f04008309ceb2784dcda7ffd829eae2a` is verified against <https://motion-graph-sketchpad.sociobot.in>. The reported deployment-only failure did not reproduce: candidate and live production outputs match byte-for-byte for the app shell and sampled static assets. No product defect remains.
+**FAIL.** The full review is in [`.factory/review-6.md`](review-6.md). One blocking finding remains: the declared `eight-properties` claim test intermittently stopped at 7/8 during the required default clean-clone `npm test` run.
 
-## How verified
+## What was done
 
-- From the clean candidate checkout: `npm ci`, all 18 exact commands in `.factory/claims.json`, `npm test`, `npm run build`, and `npm audit --audit-level=high` all passed. The test suite reports 11 Vitest and 29 Chromium tests; production build includes `tsc` and there is no separate lint script.
-- Against deployment: `PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm test` passed all 29 browser tests, including claims, desktop/mobile, keyboard, invalid import recovery, reduced motion, Axe, offline reload, and metadata routes.
-- A cold live first-read passed. One click opened the isolated four-property Lantern drift demo. A fresh request log contained only same-origin resources; no account/payment/analytics requests or controls were present.
-- Service-worker update and offline `/demo` reload passed. All visible 390px demo controls meet 44px sizing; no horizontal overflow, console error, page error, or Axe violation was found.
-- Live headers include CSP, HSTS, nosniff, referrer and permissions policies; hashed assets are immutable and the service worker is no-store. Unknown paths return 404.
-- Live Lighthouse scores: Performance 100, Accessibility 100, Best Practices 100, SEO 100. Initial JS is 10.90 kB gzip and CSS is 5.72 kB gzip.
+- Reviewed the live product cold in fresh 390 × 844 and 1366 × 768 contexts.
+- Audited every landing/demo sentence, heading, action, and README sentence against the plain-words and claims contracts.
+- Exercised the one-click sample, preview, Reset, sticky demo banner, real-storage isolation, same-origin requests, and offline reload.
+- Ran all 18 exact claim commands independently from clean clone `/tmp/mgs-review6-clean-vI7dDL`.
+- Ran clean `npm test`, `npm run build`, `npm audit --audit-level=high`, the complete live browser suite, integrated Axe, Verify URL, route/link/metadata/404 checks, and asset/header/hash checks.
+- Read every earlier review, polish report, and handoff, then rechecked every historical finding in live behavior and current source.
 
-## Reproduce
+## Verification summary
 
-```sh
-npm ci
-npm test
-npm run build
-PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm test
-```
+- All 18 exact claim commands: passed independently.
+- First clean default `npm test`: 28/29 browser tests passed; `eight-properties` failed at 7/8.
+- Second clean default `npm test`: 11 unit and 29 browser tests passed.
+- Focused `eight-properties` repeat: 10/10 passed.
+- Live browser suite: 29/29 passed.
+- Build: passed; `dist/` produced; initial JS 10.90 kB gzip.
+- Dependency audit: zero vulnerabilities.
+- Live Axe: zero violations on Home, Demo, Privacy, and Terms.
+- Live requests: zero off-origin requests during the demo flow.
+- Live and clean-build JS/CSS hashes: identical.
 
-Open `/?demo=1` for the isolated Lantern drift sample. **Reset demo** restores it; **Open my real sketch** exits without copying demo state into real local storage.
+## Known gap and next step
 
-## Full report and known gaps
-
-See [`.factory/verification-4.md`](verification-4.md) for claim-by-claim evidence, headers, deployment identity, and severity counts. Known product gaps: none. Deployment, DNS, and billing remain factory-owned.
+Stabilize the `eight-properties` claim path by waiting for each count/rail transition after every click and fixing any remaining lost activation. Repeat the complete default suite from a clean clone before acceptance. No product code was modified in this review.
