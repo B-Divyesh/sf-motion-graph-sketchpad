@@ -87,12 +87,22 @@ test('@claim:eight-properties limits a real sketch to eight properties', async (
   await page.goto('/');
   await page.evaluate(() => localStorage.clear());
   await page.reload();
-  await page.locator('[data-action="add-property"][data-kind="color"]').first().click();
-  for (let index = 1; index < 8; index += 1) await page.locator('[data-action="add-property"][data-kind="number"]').click();
-  await expect(page.getByText('8/8')).toBeVisible();
+  const count = page.locator('.property-count');
+  const rails = page.locator('.property-rail');
+  const add = async (kind: 'number' | 'color', expectedCount: number) => {
+    await page.locator(`[data-action="add-property"][data-kind="${kind}"]`).first().click();
+    await expect(count).toHaveText(`${expectedCount}/8`);
+    await expect(rails).toHaveCount(expectedCount);
+  };
+
+  await add('color', 1);
+  for (let countAfterAdd = 2; countAfterAdd <= 8; countAfterAdd += 1) {
+    await add('number', countAfterAdd);
+  }
+
   await expect(page.getByRole('button', { name: 'Add number property' })).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Add colour property' })).toBeDisabled();
-  await expect(page.locator('.property-rail')).toHaveCount(8);
+  await expect(rails).toHaveCount(8);
   await expect(page.locator('.kind-badge').first()).toHaveText('Colour');
 });
 

@@ -11,7 +11,7 @@ import {
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const STORAGE_KEY = 'motion-graph-sketchpad:sketch:v1';
-const BUILD_ID = 'v1.0.5';
+const BUILD_ID = 'v1.0.6';
 const easings: Easing[] = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'];
 function isDemoLocation(locationLike: Pick<Location, 'pathname' | 'search'> = location): boolean {
   return locationLike.pathname === '/demo' || new URLSearchParams(locationLike.search).get('demo') === '1';
