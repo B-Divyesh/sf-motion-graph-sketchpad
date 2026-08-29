@@ -1,9 +1,13 @@
 # Independent verification 9 — PASS
 
-**Date:** 2026-08-29  
-**Candidate:** `931556280acf59809e08f7553af3a62467e80843`  
-**Live URL:** <https://motion-graph-sketchpad.sociobot.in>  
-**Artifact:** static web / PWA  
+**Date:** 2026-08-29
+
+**Candidate:** `931556280acf59809e08f7553af3a62467e80843`
+
+**Live URL:** <https://motion-graph-sketchpad.sociobot.in>
+
+**Artifact:** static web / PWA
+
 **Verdict:** **PASS**
 
 The live deployment is the candidate's production output. All required claim tests, the complete clean-checkout test/build gates, the smallest useful workflow, recovery paths, accessibility checks, privacy checks, PWA behavior, delivery policy, and performance budgets passed. The previously reported deployment-only concern is not present in this deployment.
