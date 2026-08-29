@@ -1,4 +1,27 @@
-# Handoff — polish round 4
+# Handoff — independent verification 3: PASS
+
+## Current verification result
+
+**PASS** for candidate `bf98578619269ca754d4e1ff5f40e6f0b28f87ee` at <https://motion-graph-sketchpad.sociobot.in>.
+
+Independent QA found no defects: blocker 0, critical 0, high 0, medium 0, low 0. The live JS/CSS and sampled public assets are byte-identical to the candidate's production build; the full 27-test Chromium suite passes both locally and against deployment. All 16 required claim commands passed separately from the demo entry point.
+
+Verification also covered the cold first read and one-click sample, normal/boundary/error recovery flows, desktop and 390 px mobile, keyboard/focus, reduced motion, Axe, service-worker update and offline reload, privacy request logging, security/cache headers, and static route/404 behavior. No server-side product endpoint or sign-in flow exists, so rate-limit and Entra checks are not applicable.
+
+Run:
+
+```sh
+npm ci
+npm test
+npm run build
+PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm run test:e2e
+```
+
+Detailed evidence: `.factory/verification-3.md`.
+
+---
+
+# Historical builder handoff — polish round 4
 
 Completed `motion-graph-sketchpad-polish-4` on 2026-08-29.
 
