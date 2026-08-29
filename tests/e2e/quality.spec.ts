@@ -50,18 +50,31 @@ test('keeps every visible mobile interactive target at least 44 pixels', async (
   expect(boxes.filter((box) => box.width < 44 || box.height < 44)).toEqual([]);
 });
 
-test('keeps the complete desktop first action and facts above the fold', async ({ page }) => {
-  await page.setViewportSize({ width: 1366, height: 768 });
-  await page.goto('/');
-  const measurements = await page.locator('.hero-action, .plain-facts, .hero-art').evaluateAll((elements) => elements.map((element) => {
-    const box = element.getBoundingClientRect();
-    return { top: box.top, bottom: box.bottom };
-  }));
-  expect(measurements).toHaveLength(3);
-  expect(measurements.every((box) => box.top >= 0 && box.bottom <= 768)).toBe(true);
-  await expect(page.getByRole('link', { name: 'Try it with sample data' })).toBeVisible();
-  await expect(page.getByText('Loads a four-property motion sketch.')).toBeVisible();
-});
+const firstScreenViewports = [
+  { width: 1366, height: 768 },
+  { width: 1440, height: 900 },
+  { width: 1536, height: 864 },
+  { width: 1920, height: 1080 },
+  { width: 390, height: 844 },
+] as const;
+
+for (const viewport of firstScreenViewports) {
+  test(`keeps the complete first action and facts above the fold at ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    await page.goto('/');
+
+    for (const selector of ['.hero-action', '.plain-facts']) {
+      const box = await page.locator(selector).boundingBox();
+      expect(box, `${selector} has layout bounds`).not.toBeNull();
+      expect(box!.y, `${selector} starts inside the viewport`).toBeGreaterThanOrEqual(0);
+      expect(box!.y + box!.height, `${selector} ends inside the viewport`).toBeLessThanOrEqual(viewport.height);
+    }
+
+    await expect(page.getByRole('link', { name: 'Try it with sample data' })).toBeVisible();
+    await expect(page.getByText('Loads a four-property motion sketch.')).toBeVisible();
+    await expect(page.locator('.plain-facts li')).toHaveCount(3);
+  });
+}
 
 test('keeps demo controls visible and keyboard reachable after scrolling', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
