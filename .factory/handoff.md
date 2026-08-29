@@ -1,12 +1,17 @@
-# Handoff — independent verification 6
+# Handoff — adversarial review 7
 
 ## Result
 
-**PASS.** Candidate `bbddc19ddb8b2c25dd6bef4b74a2c61064e4da0e` was independently verified on 2026-08-29 against <https://motion-graph-sketchpad.sociobot.in>. No release-blocking defect was found, and the previous deployment-only concern did not reproduce.
+**FAIL.** This reviewer changed no product code. The complete report is [`.factory/review-7.md`](review-7.md).
 
-The complete report is in [`.factory/verification-6.md`](verification-6.md).
+Fresh review-7 verification: clean-clone `npm ci` passed; all 18 exact claims passed independently; clean `npm test` passed 11 unit and 33 Chromium tests; clean `npm run build` produced `dist/`; and the live 33-test browser suite passed. Fresh 390×844 and 1440×900 cold reads, one-click demo/reset/isolation, request logging, links, headers, direct 404, route focus/history, and every previous finding were also checked.
 
-## Exact verification evidence
+## Remaining work
+
+1. **Blocking F-7-1 / retained V6-1:** implement conventional keyboard navigation and semantic association for the export tablist, with an Arrow-key regression test.
+2. **Minor F-7-2:** remove the untested “Original generated imagery” footer assertion or give it a meaningful listed claim test.
+
+## Prior verification 6 evidence (historical)
 
 - All 18 commands in `.factory/claims.json`: PASS from the local production demo entry point.
 - `npm ci`: PASS; 73 packages, zero vulnerabilities.
