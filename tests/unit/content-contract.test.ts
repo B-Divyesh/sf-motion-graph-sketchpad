@@ -31,4 +31,9 @@ describe('public copy and claim contract', () => {
     expect(source).toContain('Use “Clear sketch” in the editor. You can also remove this site’s data in your browser settings.');
     expect(source).toContain('Terms for using Motion Graph Sketchpad');
   });
+
+  it('does not make an untestable generated-imagery claim in visitor copy', () => {
+    expect(readFileSync('src/main.ts', 'utf8')).not.toContain('Original generated imagery');
+    expect(readFileSync('public/404.html', 'utf8')).not.toContain('Original generated imagery');
+  });
 });

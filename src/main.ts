@@ -11,8 +11,10 @@ import {
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const STORAGE_KEY = 'motion-graph-sketchpad:sketch:v1';
-const BUILD_ID = 'v1.0.6';
+const BUILD_ID = 'v1.0.7';
 const easings: Easing[] = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'];
+const exportKinds = ['css', 'waapi', 'json'] as const;
+type ExportKind = typeof exportKinds[number];
 function isDemoLocation(locationLike: Pick<Location, 'pathname' | 'search'> = location): boolean {
   return locationLike.pathname === '/demo' || new URLSearchParams(locationLike.search).get('demo') === '1';
 }
@@ -21,7 +23,7 @@ let demoMode = isDemoLocation();
 let sketch = demoMode ? cloneSketch(SAMPLE_SKETCH) : loadSketch();
 let selected: { propertyId: string; frameId: string } | null = firstSelection();
 let currentTime = 0;
-let exportKind: 'css' | 'waapi' | 'json' = 'css';
+let exportKind: ExportKind = 'css';
 let animationFrame = 0;
 let playing = false;
 let route = routeFromPath();
@@ -85,7 +87,7 @@ function footer(): string {
   return `<footer class="site-footer">
     <p>Export CSS, Web Animations code, or JSON.</p>
     <nav aria-label="Footer navigation"><a href="/privacy" data-route>Privacy</a><a href="/terms" data-route>Terms</a><a href="https://hello-factory.sociobot.in" rel="external">Built by Param Factory <span class="sr-only">(external site)</span></a></nav>
-    <p class="build">${BUILD_ID} · Original generated imagery</p>
+    <p class="build">${BUILD_ID}</p>
   </footer>`;
 }
 
@@ -180,15 +182,16 @@ function exportText(): string {
 }
 
 function exportPanel(): string {
+  const tab = (kind: ExportKind, label: string) => `<button id="export-tab-${kind}" role="tab" aria-selected="${exportKind === kind}" aria-controls="export-output" tabindex="${exportKind === kind ? '0' : '-1'}" data-export-kind="${kind}">${label}</button>`;
   return `<section class="export-panel" aria-labelledby="export-title">
     <div class="section-heading"><div><p class="eyebrow">Export options</p><h3 id="export-title">Export code</h3></div><p>Output stays stable when the sketch stays the same.</p></div>
     <div class="export-tabs" role="tablist" aria-label="Export format">
-      <button role="tab" aria-selected="${exportKind === 'css'}" data-export-kind="css">CSS</button>
-      <button role="tab" aria-selected="${exportKind === 'waapi'}" data-export-kind="waapi">Web Animations</button>
-      <button role="tab" aria-selected="${exportKind === 'json'}" data-export-kind="json">JSON</button>
+      ${tab('css', 'CSS')}
+      ${tab('waapi', 'Web Animations')}
+      ${tab('json', 'JSON')}
     </div>
     <div class="support-note"><strong>Browser support:</strong> Choose from five standard timing functions. The Web Animations export registers each custom CSS property before animating it.</div>
-    <pre tabindex="0"><code>${escapeHtml(exportText())}</code></pre>
+    <div id="export-output" role="tabpanel" aria-labelledby="export-tab-${exportKind}" tabindex="0"><pre><code>${escapeHtml(exportText())}</code></pre></div>
     <div class="export-actions"><button class="button primary" data-action="copy-export">Copy ${exportKind === 'waapi' ? 'Web Animations' : exportKind.toUpperCase()}</button><button class="button secondary" data-action="download-export">Download file</button></div>
   </section>`;
 }
@@ -569,10 +572,25 @@ function bindEvents() {
     }
   }));
   document.querySelectorAll<HTMLButtonElement>('.keyframe').forEach(bindKeyframeDrag);
-  document.querySelectorAll<HTMLButtonElement>('[data-export-kind]').forEach((button) => button.addEventListener('click', () => {
-    exportKind = button.dataset.exportKind as typeof exportKind; render();
+  const selectExportKind = (kind: ExportKind) => {
+    exportKind = kind;
+    render();
     document.querySelector<HTMLButtonElement>(`[data-export-kind="${exportKind}"]`)?.focus();
-  }));
+  };
+  document.querySelectorAll<HTMLButtonElement>('[data-export-kind]').forEach((button) => {
+    button.addEventListener('click', () => selectExportKind(button.dataset.exportKind as ExportKind));
+    button.addEventListener('keydown', (event) => {
+      const current = exportKinds.indexOf(button.dataset.exportKind as ExportKind);
+      let next = current;
+      if (event.key === 'ArrowRight') next = (current + 1) % exportKinds.length;
+      if (event.key === 'ArrowLeft') next = (current - 1 + exportKinds.length) % exportKinds.length;
+      if (event.key === 'Home') next = 0;
+      if (event.key === 'End') next = exportKinds.length - 1;
+      if (next === current) return;
+      event.preventDefault();
+      selectExportKind(exportKinds[next]);
+    });
+  });
   document.querySelector<HTMLInputElement>('#sketch-name')?.addEventListener('change', (event) => {
     sketch.name = (event.target as HTMLInputElement).value.trim() || 'Untitled motion'; saveSketch(); render();
   });

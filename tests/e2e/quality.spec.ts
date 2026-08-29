@@ -91,6 +91,34 @@ test('keeps demo controls visible and keyboard reachable after scrolling', async
   await expect(page.getByRole('button', { name: 'Open my real sketch' })).toBeVisible();
 });
 
+test('uses a complete keyboard tab pattern for export formats', async ({ page }) => {
+  await page.goto('/demo');
+  const css = page.getByRole('tab', { name: 'CSS', exact: true });
+  const webAnimations = page.getByRole('tab', { name: 'Web Animations', exact: true });
+  const json = page.getByRole('tab', { name: 'JSON', exact: true });
+  const panel = page.getByRole('tabpanel');
+
+  await css.focus();
+  await expect(css).toHaveAttribute('aria-selected', 'true');
+  await expect(css).toHaveAttribute('tabindex', '0');
+  await expect(css).toHaveAttribute('aria-controls', 'export-output');
+
+  await css.press('ArrowRight');
+  await expect(webAnimations).toBeFocused();
+  await expect(webAnimations).toHaveAttribute('aria-selected', 'true');
+  await expect(webAnimations).toHaveAttribute('tabindex', '0');
+  await expect(css).toHaveAttribute('aria-selected', 'false');
+  await expect(css).toHaveAttribute('tabindex', '-1');
+  await expect(panel).toHaveAttribute('aria-labelledby', 'export-tab-waapi');
+
+  await webAnimations.press('End');
+  await expect(json).toBeFocused();
+  await expect(json).toHaveAttribute('aria-selected', 'true');
+  await json.press('Home');
+  await expect(css).toBeFocused();
+  await expect(css).toHaveAttribute('aria-selected', 'true');
+});
+
 test('shows plain recovery guidance for malformed JSON imports', async ({ page }) => {
   await page.goto('/demo');
   await page.locator('#import-file').setInputFiles({
