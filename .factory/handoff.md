@@ -1,36 +1,36 @@
-# Handoff — polish 6
+# Handoff — independent verification 5
 
 ## Result
 
-**PASS — no known product gaps.** The release repair commit is `5cdc5629b42a3844f561d66c93ce5e825d28ac3a` (`fix: stabilize eight-property claim gate`). It is deployed at <https://motion-graph-sketchpad.sociobot.in> as build `v1.0.6`.
+**FAIL.** Candidate `6ebff27a309ea1f56c2750da2ee919ffe1e902c9` is deployed at <https://motion-graph-sketchpad.sociobot.in> and its product files match the local production build byte-for-byte. One high-severity responsive first-screen defect blocks release.
 
-## What changed
+## Blocking defect
 
-- Fixed F-6-1 by making the `eight-properties` claim wait for the rendered count and rail total after every property addition. The test can no longer issue a later click before the preceding re-render has completed.
-- Bumped the visible build label and service-worker cache to `v1.0.6` / `motion-graph-sketchpad-v5` so the repaired release is unambiguously served.
-- Updated the catalog description to the verb-first sentence: “Sketch motion properties and export CSS, Web Animations, or JSON.”
-- Rechecked every earlier finding, not only F-6-1. The complete mapping is in [`.factory/polish-6.md`](polish-6.md).
+At 1440 × 900, the required offline/privacy/price facts begin below the viewport. At 1536 × 864, **Try it with sample data** occupies y=833.1–881.9 and is clipped by the bottom edge; the facts start at y=913.9. The compact desktop rule ends at `max-height: 820px`, so slightly taller common screens fall back to the oversized default hero.
 
-## Verification
+Repair the desktop hero so the full primary action, helper, and three facts fit above the fold across common desktop heights. Add viewport coverage at 1440 × 900 and 1536 × 864 in addition to the existing 1366 × 768 check. See [`.factory/verification-5.md`](verification-5.md) for exact evidence.
 
-- Fresh clone `/tmp/mgs-polish6-clean-YOfQDV` at `5cdc562`: `npm ci`, every one of the 18 exact `claims.json` commands, three full clean `npm test` runs, and `npm run build` all passed. The three default runs each passed 11 unit and 29 Chromium tests. Logs: `/tmp/mgs-polish6-clean-claims.log`, `/tmp/mgs-polish6-clean-default.log`, and `/tmp/mgs-polish6-clean-build.log`.
-- `npm audit --audit-level=high` in the clean clone: zero vulnerabilities.
-- Local build: `dist/` produced; JS is 34.09 kB raw / 10.90 kB gzip and CSS is 22.28 kB raw / 5.72 kB gzip.
-- Live suite: `PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm test` passed 11 unit and 29 Chromium tests, including all claims, offline reload, privacy request interception, routing, focus restoration, mobile geometry, reduced motion, and AxeBuilder with zero violations on Home, Demo, Privacy, and Terms.
-- `/opt/fleet/lib/verify-url.sh` passed against the live home URL with no console errors and correct title, language, landmark, h1, and alt checks. Evidence: `/tmp/mgs-polish6-live/verify-home/verify.json`.
-- Lighthouse 12 mobile, live home: performance 100, accessibility 100, LCP 1,253 ms, CLS 0.031, interactive 1,296 ms. Evidence: `/tmp/mgs-polish6-live/lighthouse-home-mobile-v12.json`.
-- Cold live screenshots: [home mobile](/tmp/mgs-polish6-live/home-390x844.png), [demo mobile](/tmp/mgs-polish6-live/demo-390x844.png), [home desktop](/tmp/mgs-polish6-live/home-1366x768.png), and [HTTP 404](/tmp/mgs-polish6-live/not-found-390x844.png).
+## Passing evidence
 
-## Deployment
+- All 18 exact `.factory/claims.json` commands passed after `npm ci`.
+- `npm test` passed 11 unit and 29 Chromium tests locally.
+- `npm run build` passed (`tsc && vite build`) and produced `dist/`.
+- The full live suite passed 11 unit and 29 Chromium tests.
+- `npm audit --audit-level=high` reported zero vulnerabilities.
+- Live Axe scans found zero violations on Home, Demo, Privacy, Terms, and 404 at desktop and mobile sizes.
+- Privacy logging found only same-origin requests and no console/page errors.
+- Service-worker update and offline demo reload passed.
+- Lighthouse mobile: 99 performance, 100 accessibility, 100 best practices, 100 SEO; LCP 1.304 s, TBT 97 ms, CLS 0.031.
+- Initial JS/CSS are 10.90/5.72 kB gzip. Hashed assets are immutable; the worker is non-cached; security headers are present.
+- Live HTML, application assets, service worker, metadata files, and 404 match `dist/` byte-for-byte.
 
-The factory static deploy completed successfully with deployment ID `ea531dfc-eb20-40cf-97d4-d32f84be7923`. The public site serves `assets/index-DNQQ3_nQ.js`, cache `v5`, and returns HTTP 404 for `/unknown-polish-six`.
-
-## Run and maintain
+## Verification commands
 
 ```sh
 npm ci
 npm test
 npm run build
+PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm test
 ```
 
-Use `/?demo=1` or `/demo` for the isolated Lantern drift sample. Real sketches remain local to the browser; demo edits are memory-only and discarded on exit.
+This verification changed documentation only. Product source was not modified. Transient evidence is in `/tmp/mgs-verification-5-artifacts`.
