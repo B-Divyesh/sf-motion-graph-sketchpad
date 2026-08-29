@@ -1,18 +1,41 @@
-# Handoff — adversarial review 4
+# Handoff — polish round 4
 
-Completed `motion-graph-sketchpad-review-4` on 2026-08-29. No product code was modified.
+Completed `motion-graph-sketchpad-polish-4` on 2026-08-29.
 
 ## Result
 
-`.factory/review-4.md` records a **FAIL** with one blocking finding: at 390 × 844, the one-click demo opens on another full landing hero. Its sample editor begins below y=1170, so the first post-click screen does not show realistic sample data being used.
+The one-click demo is now product-first. At 390 × 844, `/?demo=1` shows the persistent sandbox banner, “Lantern drift,” four editable property inputs, and working preview controls without scrolling. The complete keyframe editor and exports remain directly below. The distinct night editing bay, cyan paths, amber controls, and chamfered surfaces are unchanged.
 
-## Verification performed
+All earlier review and verification fixes remain in place. `.factory/polish-4.md` maps every cumulative finding to its change and evidence. The catalog description is verb-first and 87 characters.
 
-- Fresh live Chromium at 390 × 844 and 1366 × 768; both landing first screens clearly state job, audience, and first action.
-- Live demo edit/reset/storage/request-log flow; the banner is sticky and no off-origin demo requests occurred.
-- Fresh clone at `/tmp/motion-graph-sketchpad-review-4-clean-PLYceK`: `npm ci`, all 16 commands declared in `.factory/claims.json` independently, `npm test` (7 unit + 23 browser tests), and `npm run build`.
-- Live route/metadata/link crawl, direct 404, focus/back navigation, Axe scan, mobile 44 px target audit, and cache-header checks.
+## Deployment
 
-## Next step
+- Implementation commit: `31d9d66b5319837c23406a55e18c78f0d3b20adf`
+- Azure Static Web Apps deployment: `d7a1137e-3527-43fe-a865-6acda29dc90d`
+- Live URL: <https://motion-graph-sketchpad.sociobot.in>
+- Live JavaScript and CSS hashes match the local `dist/` artifacts.
 
-Make `?demo=1` / `/demo` product-first on a phone, then add a post-click 390 px test that confirms “Lantern drift,” all four properties, and a working editor/preview are visible before scrolling. Re-run the entire review after deployment.
+## Verification
+
+- Fresh clone `/tmp/mgs-polish4-clean-ynqEXq`: `npm ci`, all 16 claim commands independently, `npm test`, `npm run build`, `npm audit --audit-level=high`, and the one-test-per-claim audit passed.
+- Final suite: 10 unit tests and 27 Chromium tests cover claims, demo isolation/reset, export/import, offline reload, privacy requests, 390 px geometry, every 44 px target, keyboard editing, route focus/history, legal links, metadata, malformed input, reduced motion, and Axe.
+- Build: JS 34.08 kB / 10.91 kB gzip; CSS 22.28 kB / 5.72 kB gzip; generated files are in `dist/`.
+- Local Verify URL: `/tmp/mgs-polish4-local-verify/verify.json`.
+- Live Verify URL: `/tmp/mgs-polish4-live/verify/verify.json`; no console errors, correct title/lang/main/h1, no missing alt, and no unlabeled buttons.
+- Live first-screen evidence: `/tmp/mgs-polish4-live/demo-after-one-click-390x844.png`; the last required control ends at y=703 in an 844 px viewport.
+- Live Lighthouse mobile: 100 Performance, 100 Accessibility, 100 Best Practices, 100 SEO; FCP 1.2 s, LCP 1.3 s, CLS 0, TBT 70 ms.
+- Live routes `/`, `/demo`, `/?demo=1`, `/privacy`, `/terms`, robots, sitemap, favicon, and social preview return 200. `/missing-frame` returns 404 with the designed shared skeleton and legal links.
+- Live cache and security headers are correct: immutable versioned assets, non-cached service worker, CSP, HSTS, nosniff, referrer policy, and permissions policy.
+
+## Run and verify
+
+```sh
+npm ci
+npm test
+npm run build
+PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npx playwright test
+```
+
+## Known gaps and next steps
+
+None. The factory-provided browser coverage is Chromium; no product or acceptance finding remains open.

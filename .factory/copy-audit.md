@@ -1,6 +1,6 @@
 # Copy audit
 
-Audited on 2026-08-28 against the `plain-words` contract. Counts treat hyphenated terms and code identifiers as one word.
+Audited on 2026-08-29 against the `plain-words` contract. Counts treat hyphenated terms and code identifiers as one word.
 
 ## First screen
 

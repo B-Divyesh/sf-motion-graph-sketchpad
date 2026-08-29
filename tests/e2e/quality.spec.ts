@@ -146,3 +146,20 @@ test('replaces preview travel with a final frame when motion is reduced', async 
   await expect(page.locator('#current-time')).toHaveText('2400');
   await expect(page.locator('#app-status')).toContainText('Motion is reduced in your settings.');
 });
+
+test('keeps every reviewed heading and action in plain words', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { level: 2, name: 'Edit motion property values' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 2, name: 'What this sketchpad does not do' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 3, name: 'Add a motion property' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 3, name: 'Set keyframe times' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 3, name: 'Export animation code' })).toBeVisible();
+  await expect(page.locator('.hero-art figcaption')).toHaveText('Test motion. Export the code.');
+
+  await page.goto('/demo');
+  await expect(page.getByRole('button', { name: 'Add number property' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Add colour property' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Restart preview' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Open my real sketch' })).toBeVisible();
+  await expect(page.getByText('Export options', { exact: true })).toBeVisible();
+});

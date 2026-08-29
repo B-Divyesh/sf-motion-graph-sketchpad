@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+const appOrigin = new URL(process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173').origin;
+
 test('@claim:offline-reload works offline after the first visit', async ({ page, context }) => {
   await page.goto('/demo');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Edit a sample motion sketch');
@@ -15,7 +17,7 @@ test('@claim:offline-reload works offline after the first visit', async ({ page,
 test('@claim:local-only keeps the full demo flow on the same origin', async ({ page }) => {
   const outsideRequests: string[] = [];
   page.on('request', (request) => {
-    if (new URL(request.url()).origin !== 'http://127.0.0.1:4173') outsideRequests.push(request.url());
+    if (new URL(request.url()).origin !== appOrigin) outsideRequests.push(request.url());
   });
   await page.goto('/demo');
   await page.getByLabel('Sketch name').fill('Private test');
@@ -190,7 +192,7 @@ test('@claim:five-standard-easings offers five standard timing functions', async
 test('@claim:no-account-demo-network has no account and makes no off-origin demo requests', async ({ page }) => {
   const outsideRequests: string[] = [];
   page.on('request', (request) => {
-    if (new URL(request.url()).origin !== 'http://127.0.0.1:4173') outsideRequests.push(request.url());
+    if (new URL(request.url()).origin !== appOrigin) outsideRequests.push(request.url());
   });
   await page.goto('/demo');
   await page.getByLabel('Sketch name').fill('Private demo');
