@@ -102,6 +102,10 @@ test('uses a complete keyboard tab pattern for export formats', async ({ page })
   await expect(css).toHaveAttribute('aria-selected', 'true');
   await expect(css).toHaveAttribute('tabindex', '0');
   await expect(css).toHaveAttribute('aria-controls', 'export-output');
+  await expect(panel).toHaveAttribute('id', 'export-output');
+  await expect(panel).toHaveAttribute('aria-labelledby', 'export-tab-css');
+  await expect(webAnimations).toHaveAttribute('tabindex', '-1');
+  await expect(json).toHaveAttribute('tabindex', '-1');
 
   await css.press('ArrowRight');
   await expect(webAnimations).toBeFocused();
@@ -117,6 +121,9 @@ test('uses a complete keyboard tab pattern for export formats', async ({ page })
   await json.press('Home');
   await expect(css).toBeFocused();
   await expect(css).toHaveAttribute('aria-selected', 'true');
+  await css.press('ArrowLeft');
+  await expect(json).toBeFocused();
+  await expect(json).toHaveAttribute('aria-selected', 'true');
 });
 
 test('shows plain recovery guidance for malformed JSON imports', async ({ page }) => {

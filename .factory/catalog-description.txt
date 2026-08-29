@@ -1,1 +1,1 @@
-Sketch motion properties and export CSS, Web Animations, or JSON.
+Sketch property motion, then export CSS, Web Animations, or JSON.
