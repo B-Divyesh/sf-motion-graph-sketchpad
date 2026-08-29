@@ -38,4 +38,14 @@ describe('Static Web Apps response policy', () => {
     expect(page).toContain('This address does not match a page on this site.');
     expect(page).toContain('Return to the sketchpad');
   });
+
+  it('stamps the app and static 404 build identifiers from one source', () => {
+    const app = readFileSync('src/main.ts', 'utf8');
+    const page = readFileSync('public/404.html', 'utf8');
+    const build = readFileSync('vite.config.ts', 'utf8');
+    expect(app).toContain('const BUILD_ID = __BUILD_ID__');
+    expect(page).toContain('<p class="build">__BUILD_ID__</p>');
+    expect(build).toContain("name: 'stamp-static-build-id'");
+    expect(build).toContain("notFoundPage.replaceAll('__BUILD_ID__', buildId)");
+  });
 });

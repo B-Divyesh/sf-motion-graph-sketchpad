@@ -205,6 +205,7 @@ input:hover, select:hover { border-color: #6d8995; }
 .legal h1 { max-width: 13ch; font-size: clamp(2.8rem, 6vw, 5.5rem); }
 .legal h2 { margin-top: 48px; font-size: 1.6rem; }
 .legal article > p:not(.eyebrow):not(.lede) { max-width: 68ch; color: var(--muted); }
+.legal .contact-link { display: inline-flex; min-height: 44px; align-items: center; }
 .not-found { position: relative; min-height: calc(100vh - 280px); padding: 100px clamp(20px, 8vw, 140px); overflow: hidden; }
 .not-found h1 { max-width: 12ch; font-size: clamp(3rem, 7vw, 6rem); }
 .not-found > p:not(.eyebrow) { margin-bottom: 32px; color: var(--muted); }

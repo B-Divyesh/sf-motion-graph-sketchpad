@@ -41,20 +41,40 @@ test('fits the 390 pixel mobile viewport', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Play preview' })).toBeVisible();
 });
 
-test('keeps every visible mobile interactive target at least 44 pixels', async ({ page }) => {
+test('keeps every visible mobile interactive target at least 44 pixels on every route', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/demo');
-  const controls = page.locator('a, button, input, select, textarea, [role="button"], [role="tab"]');
-  const boxes = await controls.evaluateAll((elements) => elements.filter((element) => {
-    const style = getComputedStyle(element);
-    const box = element.getBoundingClientRect();
-    return !element.classList.contains('sr-only') && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 1 && box.height > 1;
-  }).map((element) => {
-    const box = element.getBoundingClientRect();
-    return { name: (element as HTMLElement).innerText || element.getAttribute('aria-label') || element.tagName, width: box.width, height: box.height };
-  }));
-  expect(boxes.length).toBeGreaterThan(20);
-  expect(boxes.filter((box) => box.width < 44 || box.height < 44)).toEqual([]);
+  const routes = ['/', '/demo', '/privacy', '/terms', '/round-8-mobile-not-found', '/404.html'] as const;
+  let measuredTargets = 0;
+
+  for (const path of routes) {
+    await page.goto(path);
+    const controls = page.locator('a, button, input, select, textarea, [role="button"], [role="tab"]');
+    const boxes = await controls.evaluateAll((elements) => elements.filter((element) => {
+      const style = getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      return !element.classList.contains('sr-only') && style.visibility !== 'hidden' && style.display !== 'none' && box.width > 1 && box.height > 1;
+    }).map((element) => {
+      const box = element.getBoundingClientRect();
+      return { name: (element as HTMLElement).innerText || element.getAttribute('aria-label') || element.tagName, width: box.width, height: box.height };
+    }));
+    measuredTargets += boxes.length;
+    expect(boxes.filter((box) => box.width < 44 || box.height < 44), path).toEqual([]);
+  }
+
+  expect(measuredTargets).toBeGreaterThan(50);
+});
+
+test('uses one build identifier on normal and direct 404 routes', async ({ page }) => {
+  await page.goto('/');
+  const normalBuildId = (await page.locator('.site-footer .build').innerText()).trim();
+  expect(normalBuildId).toMatch(/^v\d+\.\d+\.\d+$/);
+
+  await page.goto('/round-8-direct-not-found');
+  await expect(page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
+  await expect(page.locator('footer .build')).toHaveText(normalBuildId);
+
+  await page.goto('/404.html');
+  await expect(page.locator('footer .build')).toHaveText(normalBuildId);
 });
 
 const firstScreenViewports = [

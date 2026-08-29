@@ -8,10 +8,12 @@ import {
   type Easing, type Keyframe, type MotionProperty, type PropertyKind, type Sketch,
 } from './model';
 
+declare const __BUILD_ID__: string;
+
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const STORAGE_KEY = 'motion-graph-sketchpad:sketch:v1';
-const BUILD_ID = 'v1.0.8';
+const BUILD_ID = __BUILD_ID__;
 const easings: Easing[] = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'];
 const exportKinds = ['css', 'waapi', 'json'] as const;
 type ExportKind = typeof exportKinds[number];
@@ -274,7 +276,7 @@ function homePage(): string {
 }
 
 function legalPage(kind: 'privacy' | 'terms'): string {
-  const privacy = `<p class="eyebrow">Privacy</p><h1 tabindex="-1">Your sketch stays on this device</h1><p class="lede">The app has no accounts. During the demo, it connects only to this website.</p><h2>What is stored</h2><p>Your real sketch is saved in local browser storage. Demo changes use temporary memory and are discarded when you leave.</p><h2>What is sent</h2><p>The demo connects only to this website. Exporting creates a file or copies text on your device.</p><h2>Remove your data</h2><p>Use “Clear sketch” in the editor. You can also remove this site’s data in your browser settings.</p><h2>Contact</h2><p>Questions can be sent to <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p>`;
+  const privacy = `<p class="eyebrow">Privacy</p><h1 tabindex="-1">Your sketch stays on this device</h1><p class="lede">The app has no accounts. During the demo, it connects only to this website.</p><h2>What is stored</h2><p>Your real sketch is saved in local browser storage. Demo changes use temporary memory and are discarded when you leave.</p><h2>What is sent</h2><p>The demo connects only to this website. Exporting creates a file or copies text on your device.</p><h2>Remove your data</h2><p>Use “Clear sketch” in the editor. You can also remove this site’s data in your browser settings.</p><h2>Contact</h2><p>Questions can be sent to <a class="contact-link" href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p>`;
   const terms = `<p class="eyebrow">Terms</p><h1 tabindex="-1">Terms for using Motion Graph Sketchpad</h1><p class="lede">These terms apply when you use Motion Graph Sketchpad.</p><h2>Your work</h2><p>You keep all rights to the sketches and code you create or export.</p><h2>Allowed use</h2><p>You may use the tool for personal or commercial work. Do not use it to break laws or harm other people.</p><h2>No warranty</h2><p>The tool is provided without a warranty. Check exported code before using it in production.</p><h2>Changes</h2><p>Features and these terms may change. The date below shows the latest version.</p><p>Last updated: 28 August 2026.</p>`;
   return `${header()}<main id="main" class="legal"><article>${kind === 'privacy' ? privacy : terms}</article></main>${footer()}`;
 }

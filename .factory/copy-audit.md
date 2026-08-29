@@ -132,4 +132,4 @@ No line exceeds 22 words. No line contains: leverage, seamless, effortless, robu
 | Temporary sample workspace | demo |
 | CSS browser animation interface | Web Animations |
 
-Catalog description: “Sketch property motion, then export CSS, Web Animations, or JSON.” — 10 words, 65 characters, verb-first.
+Catalog description: “Sketch numeric and colour motion, then export CSS, Web Animations, or JSON.” — 12 words, 75 characters, verb-first.
