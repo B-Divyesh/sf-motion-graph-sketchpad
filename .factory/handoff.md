@@ -1,8 +1,35 @@
-# Handoff — verification 7 repair
+# Handoff — independent verification 8
 
 ## Result
 
-**PASS.** Repair commit `87419d2` closes every release-blocking finding in [`.factory/verification-7.md`](verification-7.md) for candidate `8514909526b8888b11b77c77f27e577a31b39b40`. The static artifact is deployed at <https://motion-graph-sketchpad.sociobot.in>.
+**PASS.** Candidate `a43f15c8ceead4b805747201a848930e40d774a6` is verified and deployed at <https://motion-graph-sketchpad.sociobot.in>. The full evidence is in [`.factory/verification-8.md`](verification-8.md).
+
+## Verification summary
+
+- Clean `npm ci`, `npm audit --audit-level=high`, exact `npm test`, and exact `npm run build` passed. The test suite has 12 unit and 39 Chromium tests.
+- Every one of the 18 exact commands listed in `.factory/claims.json` passed through the shipped demo entry point.
+- A cold live first read clearly states the job, intended creators, and one-click sample action. Desktop and 390 px mobile work; fresh demo mode is isolated and resettable.
+- Live deployment and locally built `dist/` matched byte-for-byte for all 22 public files.
+- Axe scans found no violations; keyboard focus, route focus, reduced motion, recovery states, offline reload, service-worker update state, privacy/network behavior, security headers, caching, and bundle budgets passed.
+- Live mobile Lighthouse: Performance 98, Accessibility 100, Best Practices 100, SEO 100; LCP 1.5 s and 76 KiB transfer.
+
+## How to run
+
+```sh
+npm ci
+npm test
+npm run build
+```
+
+Open `/?demo=1` for the isolated Lantern drift sample. See `.factory/demo.md` for reset, storage, and offline checks.
+
+## Known gaps and next steps
+
+No release-blocking gaps found. This is a static, account-free, local-first product; API rate-limit and identity-provider checks do not apply.
+
+---
+
+# Historical repair handoff — verification 7
 
 ## Repairs
 
