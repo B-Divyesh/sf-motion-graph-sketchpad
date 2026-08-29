@@ -1,22 +1,18 @@
-# Handoff — independent verification 9
+# Handoff — adversarial review 9
 
 ## Result
 
-**PASS.** Candidate `931556280acf59809e08f7553af3a62467e80843` is accepted against the researched brief and factory product contract at <https://motion-graph-sketchpad.sociobot.in>.
-
-Fresh evidence confirms that the live deployment is byte-for-byte the candidate's production output. The earlier deployment-only concern was not reproduced. No defects were found.
+**PASS.** The live product at <https://motion-graph-sketchpad.sociobot.in> passes the adversarial first-read review. No product code was changed in this work order. The complete evidence and copy audit are in `.factory/review-9.md`.
 
 ## What was verified
 
-- All 18 exact commands in `.factory/claims.json` passed separately after a clean `npm ci`; every claim tag occurs exactly once.
+- A fresh no-hardlink clone completed `npm ci`; all 18 exact commands in `.factory/claims.json` passed separately and every claim tag occurs exactly once.
 - `npm test` passed 13 unit and 40 Chromium tests. The same 40 browser tests passed against the live deployment.
-- `npm run build` passed `tsc` and Vite and produced `dist/`; `npm audit --audit-level=high` found 0 vulnerabilities. No lint task exists.
+- `npm run build` passed `tsc` and Vite and produced `dist/`.
 - The cold first screen states the job, audience, and first action in plain words. One click opens the isolated four-property sample.
-- Independent live checks passed normal editing, preview, keyboard movement, add-keyframe interpolation, three downloads, malformed import recovery, duration limits, demo isolation, reduced motion, 200% text, 390 px layout, visible focus, and offline reload.
-- Axe found zero violations on Home, Demo, Privacy, Terms, and 404 at desktop and mobile. All visible controls measured at least 44 × 44 px.
-- All observed runtime requests were same-origin. Browser headers, CSP, immutable hashed-asset caching, no-store worker delivery, conditional caching, and legal routes passed.
-- All 22 public files in local `dist/` matched live byte-for-byte. Unknown routes return a designed HTTP 404.
-- Lighthouse mobile scored 100 Performance, 100 Accessibility, 100 Best Practices, and 100 SEO; LCP was 1.3 s and CLS 0.031.
+- Fresh cold mobile and desktop reads identified the job, audience, and primary action without scrolling. The one-click demo enters the isolated Lantern drift sample with persistent reset/exit controls.
+- Live checks passed editing, preview, keyboard movement, add-keyframe interpolation, three downloads, malformed import recovery, duration limits, demo isolation, reduced motion, 390 px layout, focus, offline reload, route handling, and link crawl.
+- Axe found zero violations in the full browser suite. All observed runtime requests were same-origin, and unknown routes return a designed HTTP 404.
 
 The full evidence and defect disposition are in `.factory/verification-9.md`.
 
