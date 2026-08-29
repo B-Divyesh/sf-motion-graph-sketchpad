@@ -39,13 +39,16 @@ describe('Static Web Apps response policy', () => {
     expect(page).toContain('Return to the sketchpad');
   });
 
-  it('stamps the app and static 404 build identifiers from one source', () => {
+  it('stamps the app, static 404, and offline cache from one release source', () => {
     const app = readFileSync('src/main.ts', 'utf8');
     const page = readFileSync('public/404.html', 'utf8');
+    const worker = readFileSync('public/sw.js', 'utf8');
     const build = readFileSync('vite.config.ts', 'utf8');
     expect(app).toContain('const BUILD_ID = __BUILD_ID__');
     expect(page).toContain('<p class="build">__BUILD_ID__</p>');
-    expect(build).toContain("name: 'stamp-static-build-id'");
-    expect(build).toContain("notFoundPage.replaceAll('__BUILD_ID__', buildId)");
+    expect(worker).toContain("const CACHE_NAME = 'motion-graph-sketchpad-__BUILD_ID__'");
+    expect(build).toContain("name: 'stamp-static-release-id'");
+    expect(build).toContain("for (const file of ['404.html', 'sw.js'])");
+    expect(build).toContain("template.replaceAll('__BUILD_ID__', buildId)");
   });
 });

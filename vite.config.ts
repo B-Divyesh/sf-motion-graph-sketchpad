@@ -10,11 +10,13 @@ export default defineConfig({
     __BUILD_ID__: JSON.stringify(buildId),
   },
   plugins: [{
-    name: 'stamp-static-build-id',
+    name: 'stamp-static-release-id',
     closeBundle() {
-      const notFoundPath = resolve(import.meta.dirname, 'dist/404.html');
-      const notFoundPage = readFileSync(notFoundPath, 'utf8');
-      writeFileSync(notFoundPath, notFoundPage.replaceAll('__BUILD_ID__', buildId));
+      for (const file of ['404.html', 'sw.js']) {
+        const outputPath = resolve(import.meta.dirname, 'dist', file);
+        const template = readFileSync(outputPath, 'utf8');
+        writeFileSync(outputPath, template.replaceAll('__BUILD_ID__', buildId));
+      }
     },
   }],
   build: {
