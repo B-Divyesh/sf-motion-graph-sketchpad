@@ -1,31 +1,33 @@
-# Handoff — adversarial first-read review 5
+# Handoff — polish round 5
 
 ## Result
 
-**FAIL** for candidate `cea8e1ab621e461c348f270af9f1821ca99b08a6` at <https://motion-graph-sketchpad.sociobot.in>.
+**PASS.** Repair commit `935e67ce4a561b13a144dd26d3c7bf927c530eae` resolves every open finding from the cumulative adversarial reviews. It is deployed to <https://motion-graph-sketchpad.sociobot.in> through Azure Static Web Apps (`https://brave-dune-0d1da2e10.7.azurestaticapps.net`). No product finding or known product gap remains.
 
-No blocking runtime behavior failed. The cold mobile/desktop read, product-first demo, isolation/reset, offline reload, routes, accessibility, build, and every declared claim command passed. Five non-blocking findings remain in `.factory/review-5.md`:
+## What changed
 
-- F-5-1: privacy data removal has no declared claim test.
-- F-5-2: adding a keyframe is an unlisted claim.
-- F-5-3: the export test does not cover every public Copy/Download outcome.
-- F-5-4: the 404 uses metaphorical copy instead of “Page not found.”
-- F-5-5: the Terms h1 does not name the page.
+- Added two observable public claims: `clear-sketch-data` and `add-keyframe`.
+- Expanded the export claim so it copies and downloads CSS, Web Animations, and JSON, then verifies every filename and byte-for-byte result.
+- Rewrote the Privacy removal instruction, the Terms h1, and both the client and direct HTTP-404 wording in plain language.
+- Bumped the offline cache namespace and displayed build id to `v1.0.5` so existing clients receive the repaired shell.
+- Strengthened the accessibility regression to run Axe with zero violations across `/`, `/demo`, `/privacy`, and `/terms`.
+- Updated the catalog description to a 80-character verb-first sentence.
 
-## Verification performed
+The complete finding-to-evidence map is in [`.factory/polish-5.md`](polish-5.md).
 
-- Fresh clone `/tmp/mgs-review5-clean`: `npm ci` passed with zero vulnerabilities.
-- All 16 commands in `.factory/claims.json` passed independently.
-- `npm test` passed 10 unit tests and 27 Chromium tests.
-- `npm run build` passed; initial JS is 10.91 kB gzip and `dist/` exists.
-- The 27-test browser suite passed against the live deployment.
-- Live Axe scans reported zero violations on `/`, `/demo`, `/privacy`, and `/terms`.
-- Live demo request logging found no off-origin request.
-- A seeded real sketch remained byte-identical through demo edit/reset/exit.
-- Live and local JS/CSS hashes match.
-- Live routes and linked destinations were crawled; normal routes returned 200 and the designed unknown route returned 404.
+## Exact verification evidence
 
-Evidence is recorded in `.factory/review-5.md`; screenshots and the live audit JSON are under `/tmp/mgs-review-5/`.
+- Fresh clone: `/tmp/mgs-polish5-clean-NNhtco` at repair commit `935e67c`; `npm ci` and `npm audit --audit-level=high` completed with 0 vulnerabilities.
+- Every one of the 18 commands declared in `.factory/claims.json` passed independently from that clean clone.
+- Clean clone `npm test`: 11 Vitest unit tests and 29 Chromium browser tests passed.
+- Clean clone `npm run build`: passed and produced `dist/index.html`. Initial JS is 34.09 kB raw / 10.90 kB gzip; CSS is 22.28 kB raw / 5.72 kB gzip.
+- Local verifier: `/opt/fleet/lib/verify-url.sh http://127.0.0.1:4173/?demo=1 /tmp/mgs-polish5-evidence/local-verify` passed with no console errors, `lang=en`, one h1/main, no missing image alt text, and no unlabelled buttons.
+- Live verifier: `/opt/fleet/lib/verify-url.sh https://motion-graph-sketchpad.sociobot.in/?demo=1 /tmp/mgs-polish5-evidence/live-verify` passed with the same checks and no console errors.
+- Live browser suite: `PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm run test:e2e` passed all 29 Chromium tests.
+- Live route/status check: `/`, `/demo`, `/privacy`, and `/terms` returned 200; `/review-5-not-found` returned 404 with the designed page-not-found shell.
+- Live asset policy: hashed JS is `public, max-age=31536000, immutable`; `/sw.js` is `no-cache, no-store, must-revalidate`.
+- Deployment identity: local/live SHA-256 match for JS `c0556aa70cddabdcdd6c793b6113ed511420b4596c59ada44b63b1e30319b4fd` and CSS `09c6df6b4b3843174ace4799d95e52e52dbc298e884ab44e8f272b092f8a17d7`.
+- Live mobile Lighthouse: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 1.2 s, LCP 1.2 s, CLS 0.031, TBT 0 ms. Report: `/tmp/mgs-polish5-evidence/live-cold/lighthouse.json`.
 
 ## Reproduce
 
@@ -33,13 +35,11 @@ Evidence is recorded in `.factory/review-5.md`; screenshots and the live audit J
 npm ci
 npm test
 npm run build
-PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npx playwright test
+PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm run test:e2e
 ```
 
-## Product changes
+Open `/?demo=1` for the isolated Lantern drift sample. Reset demo restores it; Open my real sketch exits without copying demo data to the real local-storage namespace.
 
-None. This work order was review-only. Only `.factory/review-5.md` and this handoff were changed.
+## Known gaps and next steps
 
-## Next step
-
-Resolve F-5-1 through F-5-5, deploy, then rerun the entire review rather than only the changed checks.
+None. The product is a complete local-first static web app; deployment, DNS, and billing remain factory-owned.

@@ -1,1 +1,1 @@
-Sketch motion properties, preview easing, and export CSS, Web Animations code, or JSON.
+Sketch property motion, preview easing, and export CSS, Web Animations, or JSON.
