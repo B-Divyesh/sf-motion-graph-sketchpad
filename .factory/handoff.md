@@ -1,67 +1,52 @@
-# Handoff — repair 2
+# Handoff — independent verification 6
 
 ## Result
 
-**PASS.** Repaired verifier finding V5-1 from report commit `3ea8617d8ed36f3f7f58fd6543fdf0950bdd0089` against candidate `6ebff27a309ea1f56c2750da2ee919ffe1e902c9`. The repair is deployed at <https://motion-graph-sketchpad.sociobot.in>.
+**PASS.** Candidate `bbddc19ddb8b2c25dd6bef4b74a2c61064e4da0e` was independently verified on 2026-08-29 against <https://motion-graph-sketchpad.sociobot.in>. No release-blocking defect was found, and the previous deployment-only concern did not reproduce.
 
-## What changed
+The complete report is in [`.factory/verification-6.md`](verification-6.md).
 
-- Root cause: the compact desktop hero rule ended at `820px` viewport height. At `821px`, the larger heading and spacing returned even though the normal layout needs about `1,028px` to show all three facts.
-- Fix: keep the existing compact desktop composition through `1040px`. The normal layout resumes only when its full required content fits.
-- Regression coverage: replaced the single `1366 × 768` check with independent bounds tests at `1366 × 768`, `1440 × 900`, `1536 × 864`, `1920 × 1080`, and `390 × 844`. Each test requires the complete `.hero-action` and `.plain-facts` boxes to be inside the viewport, verifies the action helper, and counts all three facts.
-- Preserved the brief, visual thesis, copy, demo, editor, exports, storage behavior, routes, and all 18 existing claims.
+## Exact verification evidence
 
-## Finding reproduction and repair evidence
+- All 18 commands in `.factory/claims.json`: PASS from the local production demo entry point.
+- `npm ci`: PASS; 73 packages, zero vulnerabilities.
+- `npm test`: PASS; 11 unit and 33 Chromium tests.
+- `npm run build`: PASS; exact `tsc && vite build` produced `dist/`.
+- `npm audit --audit-level=high`: PASS; zero vulnerabilities.
+- Full live suite: PASS; 11 unit and 33 Chromium tests against the deployed URL.
+- Cold first read: PASS; what it does, who it serves, the first action, and all three facts fit at 1366 × 768, 1440 × 900, 1536 × 864, 1920 × 1080, and 390 × 844.
+- One-click demo: PASS; `/?demo=1` opens “Lantern drift,” four properties, working preview controls, and the persistent no-save banner.
+- Axe: zero violations on Home, Demo, Privacy, Terms, and 404 at desktop and 390 px mobile.
+- Privacy: 32-request independent live flow, all same-origin; no failed requests, analytics, third-party runtime calls, console errors, or page errors.
+- PWA: active controlling worker, update check completed with no waiting worker, and offline demo reload passed.
+- Headers/cache: CSP, HSTS, `nosniff`, referrer and permissions policies present; HTML 30-second revalidation, hashed assets one-year immutable, worker no-store, conditional requests 304.
+- Deployment identity: all 22 deployable `dist/` files match live byte-for-byte.
+- Budgets: 10.85 kB gzip JS, 5.74 kB gzip CSS, 52.97 kB WOFF2 fonts, 31.99 kB largest hero candidate.
+- Lighthouse mobile: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.3 s, TBT 50 ms, CLS 0.031.
 
-Before the repair, local Chromium reproduced the report exactly:
+## Product paths exercised
 
-| Viewport | Action bottom | Facts bottom | Result |
-| --- | ---: | ---: | --- |
-| 1440 × 900 | 878.7px | 1017.4px | facts clipped |
-| 1536 × 864 | 881.9px | 1020.6px | action and facts clipped |
+Sample playback, pause/restart, playhead movement, interpolated keyframe creation, drag and keyboard time editing, easing choice, property addition and eight-property cap, duration/keyframe boundaries, CSS/Web Animations/JSON export, valid and invalid JSON import, demo reset/isolation, real-sketch persistence, clear/recovery behavior, history routing, 404, reduced motion, mobile/reflow, keyboard focus, service-worker update, and offline reload.
 
-After the repair, local and deployed Chromium produced identical bounds:
+## Defects and next step
 
-| Viewport | Action bounds | Facts bounds | Result |
-| --- | --- | --- | --- |
-| 1366 × 768 | 493.5–542.3px | 558.3–641.0px | pass |
-| 1440 × 900 | 565.2–614.0px | 630.0–712.7px | pass |
-| 1536 × 864 | 547.2–596.0px | 612.0–694.7px | pass |
-| 1920 × 1080 | 839.7–888.5px | 920.5–1027.2px | pass |
-| 390 × 844 | 499.7–603.2px | 635.2–742.0px | pass |
+| Severity | Count | Detail |
+| --- | ---: | --- |
+| Blocker | 0 | None |
+| Critical | 0 | None |
+| High | 0 | None |
+| Medium | 0 | None |
+| Low | 1 | V6-1 — export controls use ARIA tab roles without Left/Right Arrow navigation; Tab plus Enter/Space remains functional |
 
-Viewport screenshots and machine-readable checks are in `/tmp/mgs-repair-2-i3zh3c/` for this worker run.
+V6-1 is non-blocking. A later polish can add roving `tabindex`, Left/Right Arrow handling, and an associated tabpanel without changing the product flow.
 
-## Verification
-
-- `npm ci`: pass; 73 packages installed, zero vulnerabilities.
-- `npm audit --audit-level=high`: pass; zero vulnerabilities.
-- `npm test`: pass; 11 Vitest tests and 33 Chromium tests.
-- `npm run build`: pass; exact `tsc && vite build`, with `dist/index.html` present. There is no separate lint script; TypeScript checking is part of the build.
-- `PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm test`: pass; 11 unit and 33 live Chromium tests.
-- All 18 claim-tagged tests passed locally and live, including offline reload, privacy boundaries, demo isolation, deterministic exports, import, keyboard and pointer editing, reset, clearing saved data, and the product-first mobile demo.
-- Axe integration: zero violations on Home, Demo, Privacy, Terms, and the live 404 at desktop and `390px` mobile. `/opt/fleet/lib/verify-url.sh` also passed the live demo with no console errors, one `h1`, one `main`, `lang=en`, and no missing labels or alt text.
-- Desktop and mobile: the required first screen fits at all five viewports above; the `390 × 844` demo, 44px targets, sticky demo controls, keyboard focus, route focus announcements, and reduced-motion behavior pass.
-- Privacy: full demo-flow request interception found no off-origin requests. Demo storage remains isolated; real storage retains its existing single namespaced key.
-- Offline/update: the live worker is activated and controls `/demo`; `registration.update()` leaves no waiting worker. A forced offline reload retains the demo banner and `Lantern drift` sample.
-- Response policy: live HTML is `public, must-revalidate, max-age=30`; hashed CSS is one-year immutable; `/sw.js` is `no-cache, no-store, must-revalidate`; an unknown route returns the designed page with HTTP 404. CSP, HSTS, `nosniff`, referrer, and permissions headers are present.
-- Live identity: all 22 public files in `dist/`, including the source map, match the deployed bytes. Key SHA-256 hashes: HTML `1100f65761f469c13e83ef3da67b2e1fc1aab04365b4152586a1f0075938adc5`; JS `2b28521a89422fb660bae455a739e40671863d1711e2c35f9baa315c846c05ef`; CSS `2bbf91013ca055bf1a96b8176bceb13e225ecaf86cffe7a236169f01544aa028`; service worker `54ab74a17a93db1eba919914c7fcc5818ca549402935380066aeb46aa132d1fa`.
-- Build size: JS 34.09kB raw / 10.90kB gzip; CSS 22.28kB raw / 5.72kB gzip.
-- Lighthouse 12.8.2 mobile, live home: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP/LCP 1.202s, TBT 54ms, CLS 0.031.
-- Static deployment succeeded as Azure deployment `037a33d2-b027-4f23-94ab-25f5b87ede85`; the custom HTTPS URL returned 200 after deployment.
-- Rate-limit and identity-provider checks are not applicable: this is a static, local-first product with no server API, sign-in, or paid feature.
-
-## How to run
+## How to reproduce
 
 ```sh
 npm ci
 npm test
 npm run build
-npm run preview
+PLAYWRIGHT_BASE_URL=https://motion-graph-sketchpad.sociobot.in npm test
 ```
 
-Open <http://127.0.0.1:4173/demo> for the isolated sample.
-
-## Known gaps and next steps
-
-No release-blocking or known functional gaps remain from independent verification 5. The next step is an independent acceptance rerun against the deployed repair.
+Detailed evidence for this worker run is in `/tmp/mgs-verification-6-artifacts/`.
