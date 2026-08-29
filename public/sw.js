@@ -1,4 +1,4 @@
-const CACHE_NAME = 'motion-graph-sketchpad-v3';
+const CACHE_NAME = 'motion-graph-sketchpad-v4';
 const FIXED_ASSETS = [
   '/', '/demo', '/privacy', '/terms', '/manifest.webmanifest', '/favicon.svg',
   '/assets/hero-night-bay-768.webp', '/assets/hero-night-bay-1280.webp',

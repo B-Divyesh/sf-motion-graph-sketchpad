@@ -48,7 +48,7 @@ At 390 × 844, the banner, sample name, four property inputs, and preview contro
 | Choose from five standard timing functions. | 6 | Listed: `five-standard-easings` |
 | The Web Animations export registers each custom CSS property before animating it. | 11 | Listed: `waapi-registers-properties` |
 | Add up to eight number or colour properties. | 8 | Pass |
-| Add keyframes, drag their times, and choose easing. | 8 | Pass |
+| Add keyframes, drag their times, and choose easing. | 8 | Listed: `add-keyframe`, `drag-keyframes`, `five-standard-easings` |
 | Copy CSS, Web Animations code, or stable JSON. | 8 | Pass |
 | This tool does not rig characters, render video, or manage teams. | 11 | Pass |
 | It tests plain values before you open a larger editor. | 10 | Pass |
@@ -104,6 +104,19 @@ No line exceeds 22 words. No line contains: leverage, seamless, effortless, robu
 | It opens the “Lantern drift” sample with four animated properties in a working editor. | 14 | Listed: `demo-four-property-sample` |
 | Use Reset demo to restore the sample. | 7 | Listed: `demo-reset` |
 | After one online visit, the browser stores the files needed to reopen the app offline. | 15 | Listed: `offline-reload` |
+| Use Clear sketch in the editor to remove a saved sketch from this browser. | 14 | Listed: `clear-sketch-data` |
+
+## Legal and 404 routes
+
+| Copy | Words | Result |
+| --- | ---: | --- |
+| Use “Clear sketch” in the editor. | 5 | Listed: `clear-sketch-data` |
+| You can also remove this site’s data in your browser settings. | 11 | Browser instruction, not a product-runtime claim |
+| Terms for using Motion Graph Sketchpad | 5 | Literal Terms h1 |
+| 404 | 1 | Literal error label |
+| Page not found | 3 | Literal 404 h1 |
+| This address does not match a page on this site. | 10 | Literal recovery explanation |
+| Return to the sketchpad | 4 | Clear recovery action |
 
 ## Terminology
 

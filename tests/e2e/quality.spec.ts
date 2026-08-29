@@ -4,13 +4,15 @@ import { expect, test } from '@playwright/test';
 test('has route metadata, landmarks, and no serious accessibility findings', async ({ page }) => {
   const errors: string[] = [];
   page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-  await page.goto('/demo');
-  await expect(page).toHaveTitle('Demo — Motion Graph Sketchpad');
-  await expect(page.locator('html')).toHaveAttribute('lang', 'en');
-  await expect(page.locator('main')).toHaveCount(1);
-  await expect(page.locator('h1')).toHaveCount(1);
-  const results = await new AxeBuilder({ page }).analyze();
-  expect(results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact ?? ''))).toEqual([]);
+  for (const path of ['/', '/demo', '/privacy', '/terms']) {
+    await page.goto(path);
+    await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+    await expect(page.locator('main')).toHaveCount(1);
+    await expect(page.locator('h1')).toHaveCount(1);
+    const results = await new AxeBuilder({ page }).analyze();
+    expect(results.violations).toEqual([]);
+  }
+  await expect(page).toHaveTitle('Terms — Motion Graph Sketchpad');
   expect(errors).toEqual([]);
 });
 
@@ -162,4 +164,11 @@ test('keeps every reviewed heading and action in plain words', async ({ page }) 
   await expect(page.getByRole('button', { name: 'Restart preview' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Open my real sketch' })).toBeVisible();
   await expect(page.getByText('Export options', { exact: true })).toBeVisible();
+
+  await page.goto('/privacy');
+  await expect(page.getByRole('heading', { level: 2, name: 'Remove your data' })).toBeVisible();
+  await expect(page.getByText('Use “Clear sketch” in the editor. You can also remove this site’s data in your browser settings.')).toBeVisible();
+
+  await page.goto('/terms');
+  await expect(page.getByRole('heading', { level: 1, name: 'Terms for using Motion Graph Sketchpad' })).toBeVisible();
 });

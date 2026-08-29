@@ -33,7 +33,9 @@ describe('Static Web Apps response policy', () => {
     expect(page).toContain('property="og:title"');
     expect(page).toContain('name="twitter:title"');
     expect(page).toContain('<main id="main">');
-    expect(page).toContain('<h1 tabindex="-1">This frame does not exist</h1>');
+    expect(page).toContain('<p class="eyebrow">404</p>');
+    expect(page).toContain('<h1 tabindex="-1">Page not found</h1>');
+    expect(page).toContain('This address does not match a page on this site.');
     expect(page).toContain('Return to the sketchpad');
   });
 });

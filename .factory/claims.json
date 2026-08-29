@@ -110,5 +110,19 @@
     "where": "demo export support note",
     "test": "npm test -- --grep @claim:waapi-registers-properties",
     "sandbox": "sample sketch at ?demo=1; select Web Animations and assert each exported property has CSS.registerProperty before element.animate"
+  },
+  {
+    "id": "clear-sketch-data",
+    "claim": "Clear sketch removes the saved sketch contents from this browser",
+    "where": "Privacy page, Remove your data",
+    "test": "npm test -- --grep @claim:clear-sketch-data",
+    "sandbox": "fresh real sketch with a distinctive name, property, and keyframes; accept Clear sketch, reload, and assert the old contents are absent from the editor and local storage"
+  },
+  {
+    "id": "add-keyframe",
+    "claim": "Add keyframe at playhead creates one keyframe with the interpolated value",
+    "where": "landing How it works and demo keyframe editor",
+    "test": "npm test -- --grep @claim:add-keyframe",
+    "sandbox": "sample sketch at ?demo=1; move the playhead to 600 ms, add a Drift X keyframe, and assert one new 600 ms frame with the interpolated value"
   }
 ]

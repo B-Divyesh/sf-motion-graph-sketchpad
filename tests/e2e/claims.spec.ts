@@ -1,4 +1,6 @@
+import { readFile } from 'node:fs/promises';
 import { expect, test } from '@playwright/test';
+import { cloneSketch, SAMPLE_SKETCH, valueAt } from '../../src/model';
 
 const appOrigin = new URL(process.env.PLAYWRIGHT_BASE_URL ?? 'http://127.0.0.1:4173').origin;
 
@@ -36,23 +38,33 @@ test('@claim:local-only keeps the full demo flow on the same origin', async ({ p
   expect(outsideRequests).toEqual([]);
 });
 
-test('@claim:three-exports creates CSS, Web Animations, and valid JSON', async ({ page }) => {
+test('@claim:three-exports copies and downloads CSS, Web Animations, and valid JSON', async ({ page, context }) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin: appOrigin });
   await page.goto('/demo');
   const code = page.locator('.export-panel code');
-  await expect(code).toContainText('@property --drift-x-1');
-  await expect(code).toContainText('@keyframes drift-x-1-motion');
+  const formats = [
+    { tab: 'CSS', copy: 'Copy CSS', filename: 'lantern-drift.css', fragment: '@property --drift-x-1' },
+    { tab: 'Web Animations', copy: 'Copy Web Animations', filename: 'lantern-drift.js', fragment: 'CSS.registerProperty' },
+    { tab: 'JSON', copy: 'Copy JSON', filename: 'lantern-drift.json', fragment: '"Lantern drift"' },
+  ] as const;
 
-  await page.getByRole('tab', { name: 'Web Animations', exact: true }).click();
-  await expect(code).toContainText('CSS.registerProperty');
-  await expect(code).toContainText('element.animate');
+  for (const format of formats) {
+    await page.getByRole('tab', { name: format.tab, exact: true }).click();
+    await expect(code).toContainText(format.fragment);
+    const visibleOutput = await code.innerText();
+    if (format.tab === 'JSON') expect(JSON.parse(visibleOutput)).toMatchObject({ name: 'Lantern drift', duration: 2400, version: 1 });
 
-  await page.getByRole('tab', { name: 'JSON', exact: true }).click();
-  const json = await code.textContent();
-  expect(JSON.parse(json ?? '{}')).toMatchObject({ name: 'Lantern drift', duration: 2400, version: 1 });
-  const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Download file' }).click();
-  const download = await downloadPromise;
-  expect(download.suggestedFilename()).toBe('lantern-drift.json');
+    await page.getByRole('button', { name: format.copy, exact: true }).click();
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toBe(visibleOutput);
+
+    const downloadPromise = page.waitForEvent('download');
+    await page.getByRole('button', { name: 'Download file' }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe(format.filename);
+    const downloadedPath = await download.path();
+    expect(downloadedPath).toBeTruthy();
+    expect(await readFile(downloadedPath!, 'utf8')).toBe(visibleOutput);
+  }
 });
 
 test('@claim:demo-isolation discards demo edits and never reads or writes real storage', async ({ page }) => {
@@ -224,4 +236,57 @@ test('@claim:waapi-registers-properties exports property registration before ani
     expect(registration).toBeGreaterThanOrEqual(0);
     expect(code.indexOf('element.animate', registration)).toBeGreaterThan(registration);
   }
+});
+
+test('@claim:clear-sketch-data removes saved sketch contents from this browser', async ({ page }) => {
+  const realSketch = JSON.stringify({
+    version: 1,
+    name: 'Remove this beacon',
+    duration: 800,
+    properties: [{
+      id: 'opacity', name: 'Beacon opacity', kind: 'number', unit: '',
+      keyframes: [
+        { id: 'start', time: 0, value: 0, easing: 'linear' },
+        { id: 'end', time: 800, value: 1, easing: 'linear' },
+      ],
+    }],
+  });
+  await page.goto('/');
+  await page.evaluate((value) => localStorage.setItem('motion-graph-sketchpad:sketch:v1', value), realSketch);
+  await page.reload();
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Remove this beacon');
+  await expect(page.getByLabel('Property name')).toHaveValue('Beacon opacity');
+  await expect(page.locator('.keyframe')).toHaveCount(2);
+
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Clear sketch' }).click();
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Untitled motion');
+  await expect(page.locator('.property-rail')).toHaveCount(0);
+  await expect(page.locator('.keyframe')).toHaveCount(0);
+  const saved = await page.evaluate(() => localStorage.getItem('motion-graph-sketchpad:sketch:v1'));
+  expect(saved).toContain('Untitled motion');
+  expect(saved).not.toContain('Remove this beacon');
+  expect(saved).not.toContain('Beacon opacity');
+
+  await page.reload();
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Untitled motion');
+  await expect(page.locator('.property-rail')).toHaveCount(0);
+  await expect(page.locator('.keyframe')).toHaveCount(0);
+});
+
+test('@claim:add-keyframe adds one interpolated keyframe at the playhead', async ({ page }) => {
+  await page.goto('/?demo=1');
+  const playhead = page.getByLabel('Playhead in milliseconds');
+  await playhead.fill('600');
+  await expect(page.locator('#current-time')).toHaveText('600');
+
+  const driftRail = page.locator('[data-property="drift-x"]');
+  await expect(driftRail.locator('.keyframe')).toHaveCount(3);
+  await driftRail.getByRole('button', { name: 'Add keyframe at playhead' }).click();
+  await expect(driftRail.locator('.keyframe')).toHaveCount(4);
+  await expect(driftRail.locator('.keyframe[aria-label*="at 600 milliseconds"]')).toHaveCount(1);
+
+  const expected = Number(valueAt(cloneSketch(SAMPLE_SKETCH).properties[0], 600));
+  expect(Number(await page.locator('#keyframe-form input[name="value"]').inputValue())).toBeCloseTo(expected, 8);
+  await expect(page.locator('#keyframe-form input[name="time"]')).toHaveValue('600');
 });
