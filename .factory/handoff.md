@@ -1,18 +1,18 @@
-# Handoff — adversarial review 3
+# Handoff — adversarial review 4
 
-Completed `motion-graph-sketchpad-review-3` on 2026-08-28. No product code was modified.
+Completed `motion-graph-sketchpad-review-4` on 2026-08-29. No product code was modified.
 
 ## Result
 
-`.factory/review-3.md` records a **PASS** with zero findings. It includes the required cold-read, complete copy audit, demo/privacy check, claim matrix, prior-finding recheck, route/metadata/accessibility review, and missed-leverage assessment.
+`.factory/review-4.md` records a **FAIL** with one blocking finding: at 390 × 844, the one-click demo opens on another full landing hero. Its sample editor begins below y=1170, so the first post-click screen does not show realistic sample data being used.
 
 ## Verification performed
 
-- Fresh live Chromium at 390 × 844 and 1366 × 768.
-- Live demo edit/reset/scroll/request-log flow, route/focus/metadata crawl, link crawl, Axe scan, and target-size audit.
-- Clean clone at `/tmp/mgs-review3-clean-20260828`: `npm ci` (0 vulnerabilities), every command declared in `.factory/claims.json` independently, `npm test` (7 unit + 23 browser tests), and `npm run build`.
-- Live hashed assets returned immutable cache headers; the service worker returned no-cache/no-store.
+- Fresh live Chromium at 390 × 844 and 1366 × 768; both landing first screens clearly state job, audience, and first action.
+- Live demo edit/reset/storage/request-log flow; the banner is sticky and no off-origin demo requests occurred.
+- Fresh clone at `/tmp/motion-graph-sketchpad-review-4-clean-PLYceK`: `npm ci`, all 16 commands declared in `.factory/claims.json` independently, `npm test` (7 unit + 23 browser tests), and `npm run build`.
+- Live route/metadata/link crawl, direct 404, focus/back navigation, Axe scan, mobile 44 px target audit, and cache-header checks.
 
-## Known gaps / next steps
+## Next step
 
-None. Future changes should rerun the commands above and repeat the live cold-read before release.
+Make `?demo=1` / `/demo` product-first on a phone, then add a post-click 390 px test that confirms “Lantern drift,” all four properties, and a working editor/preview are visible before scrolling. Re-run the entire review after deployment.
