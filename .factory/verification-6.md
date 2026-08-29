@@ -1,7 +1,9 @@
 # Independent verification 6 — PASS
 
-**Verified:** 2026-08-29  
-**Candidate:** `bbddc19ddb8b2c25dd6bef4b74a2c61064e4da0e` (`docs: record repair two release evidence`)  
+**Verified:** 2026-08-29
+
+**Candidate:** `bbddc19ddb8b2c25dd6bef4b74a2c61064e4da0e` (`docs: record repair two release evidence`)
+
 **Live URL:** <https://motion-graph-sketchpad.sociobot.in>
 
 ## Release decision
