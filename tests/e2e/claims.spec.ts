@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test';
 
 test('@claim:offline-reload works offline after the first visit', async ({ page, context }) => {
   await page.goto('/demo');
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Sketch property motion before coding');
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Edit a sample motion sketch');
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await page.reload();
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
@@ -149,17 +149,31 @@ test('@claim:easing-preview changes time and object transform', async ({ page })
 });
 
 test('@claim:demo-four-property-sample opens the named four-property sample', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('link', { name: 'Try it with sample data' }).click();
   await expect(page).toHaveURL(/\?demo=1$/);
-  await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
-  await page.reload();
   await expect(page.getByText('Demo — sample data, nothing is saved')).toBeVisible();
   await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
   await expect(page.locator('[data-field="property-name"]')).toHaveCount(4);
   expect(await page.locator('[data-field="property-name"]').evaluateAll((inputs) =>
     inputs.map((input) => (input as HTMLInputElement).value),
   )).toEqual(['Drift X', 'Lift', 'Scale', 'Glow colour']);
+  const firstScreen = page.locator('.demo-banner, #sketch-name, [data-field="property-name"], [data-action="play"]');
+  const boxes = await firstScreen.evaluateAll((elements) => elements.map((element) => {
+    const box = element.getBoundingClientRect();
+    return { top: box.top, bottom: box.bottom };
+  }));
+  expect(boxes).toHaveLength(7);
+  expect(boxes.every((box) => box.top >= 0 && box.bottom <= 844)).toBe(true);
+  const firstProperty = page.locator('[data-field="property-name"]').first();
+  await firstProperty.fill('Drift test');
+  await firstProperty.press('Tab');
+  await expect(page.locator('.property-summary strong').first()).toHaveText('Drift test');
+  await page.getByRole('button', { name: 'Play preview' }).click();
+  await expect.poll(async () => Number(await page.locator('#current-time').textContent())).toBeGreaterThan(100);
+  await page.reload();
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
 });
 
 test('@claim:five-standard-easings offers five standard timing functions', async ({ page }) => {

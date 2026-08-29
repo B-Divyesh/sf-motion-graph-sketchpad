@@ -16,6 +16,24 @@ Audited on 2026-08-28 against the `plain-words` contract. Counts treat hyphenate
 
 Read-aloud check: “Sketch property motion before coding. For web and game creators testing animation without scripts or a full timeline editor. Try it with sample data.” This states the job, audience, and first action in one breath.
 
+## Demo first screen
+
+| Copy | Words | Result |
+| --- | ---: | --- |
+| Demo — sample data, nothing is saved | 6 | Listed: `demo-isolation` |
+| Reset demo | 2 | Listed: `demo-reset` |
+| Open my real sketch | 4 | Clear exit action |
+| Sample motion sketch | 3 | Literal section label |
+| Edit a sample motion sketch | 5 | Plain h1 |
+| Sketch name | 2 | Bound input label |
+| 4 motion properties | 3 | Listed: `demo-four-property-sample` |
+| Property name 1–4 | 3 | Bound input labels |
+| Play preview | 2 | Listed: `easing-preview` |
+| Restart preview | 2 | Result-naming action |
+| Open the keyframe editor | 4 | Clear in-page action |
+
+At 390 × 844, the banner, sample name, four property inputs, and preview controls are visible without scrolling.
+
 ## Product and landing sections
 
 | Copy | Words | Result |
@@ -83,7 +101,7 @@ No line exceeds 22 words. No line contains: leverage, seamless, effortless, robu
 | Your real sketch is saved in local browser storage. | 8 | Listed: `local-only` |
 | Demo changes use temporary memory and are discarded when you leave. | 10 | Listed: `demo-isolation` |
 | The demo connects only to this website. | 7 | Listed: `no-account-demo-network` |
-| It loads the “Lantern drift” sample with four animated properties. | 10 | Listed: `demo-four-property-sample` |
+| It opens the “Lantern drift” sample with four animated properties in a working editor. | 14 | Listed: `demo-four-property-sample` |
 | Use Reset demo to restore the sample. | 7 | Listed: `demo-reset` |
 | After one online visit, the browser stores the files needed to reopen the app offline. | 15 | Listed: `offline-reload` |
 
@@ -99,4 +117,4 @@ No line exceeds 22 words. No line contains: leverage, seamless, effortless, robu
 | Temporary sample workspace | demo |
 | CSS browser animation interface | Web Animations |
 
-Catalog description: “Sketch motion properties and export CSS, Web Animations code, or JSON.” — 10 words, 69 characters, verb-first.
+Catalog description: “Sketch motion properties, preview easing, and export CSS, Web Animations code, or JSON.” — 13 words, 87 characters, verb-first.

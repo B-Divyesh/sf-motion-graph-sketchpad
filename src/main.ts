@@ -11,7 +11,7 @@ import {
 const app = document.querySelector<HTMLDivElement>('#app')!;
 
 const STORAGE_KEY = 'motion-graph-sketchpad:sketch:v1';
-const BUILD_ID = 'v1.0.3';
+const BUILD_ID = 'v1.0.4';
 const easings: Easing[] = ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'];
 function isDemoLocation(locationLike: Pick<Location, 'pathname' | 'search'> = location): boolean {
   return locationLike.pathname === '/demo' || new URLSearchParams(locationLike.search).get('demo') === '1';
@@ -138,11 +138,13 @@ function keyframeBottom(property: MotionProperty, frame: Keyframe, index: number
   return max === min ? 30 : 10 + ((Number(frame.value) - min) / (max - min)) * 40;
 }
 
-function propertyRail(property: MotionProperty): string {
+function propertyRail(property: MotionProperty, editableName = true): string {
   const frames = [...property.keyframes].sort((a, b) => a.time - b.time);
   return `<article class="property-rail" data-property="${property.id}">
     <div class="rail-head">
-      <label><span>Property name</span><input data-field="property-name" data-property-id="${property.id}" value="${escapeHtml(property.name)}" maxlength="28"></label>
+      ${editableName
+        ? `<label><span>Property name</span><input data-field="property-name" data-property-id="${property.id}" value="${escapeHtml(property.name)}" maxlength="28"></label>`
+        : `<div class="property-summary"><span>Property</span><strong>${escapeHtml(property.name)}</strong></div>`}
       ${property.kind === 'color' ? '<span class="kind-badge">Colour</span>' : `<label class="unit-control"><span>Unit</span><select data-field="property-unit" data-property-id="${property.id}" aria-label="Unit for ${escapeHtml(property.name)}"><option value="" ${property.unit === '' ? 'selected' : ''}>None</option><option value="px" ${property.unit === 'px' ? 'selected' : ''}>px</option><option value="%" ${property.unit === '%' ? 'selected' : ''}>%</option><option value="deg" ${property.unit === 'deg' ? 'selected' : ''}>deg</option></select></label>`}
       <button class="icon-button danger" data-action="remove-property" data-property-id="${property.id}" aria-label="Remove ${escapeHtml(property.name)}">×</button>
     </div>
@@ -200,31 +202,57 @@ function previewValues(): string {
   }).join('');
 }
 
+function previewPanel(compact = false): string {
+  return `<div class="preview-panel${compact ? ' demo-preview-panel' : ''}">
+    <div class="preview-stage" aria-label="Motion preview">
+      <div class="horizon" aria-hidden="true"></div><div class="preview-object" aria-hidden="true"><i></i></div>
+      <span class="preview-time"><output id="current-time">${Math.round(currentTime)}</output> ms</span>
+    </div>
+    <div class="transport">
+      <button class="button primary compact" data-action="play">${playing ? 'Pause preview' : 'Play preview'}</button>
+      <button class="button secondary compact" data-action="restart">Restart preview</button>
+      <label>Playhead <input id="playhead-input" type="range" min="0" max="${sketch.duration}" value="${Math.round(currentTime)}" aria-label="Playhead in milliseconds"></label>
+    </div>
+    ${compact ? '' : `<ul class="current-values" aria-label="Current property values">${previewValues()}</ul>`}
+  </div>`;
+}
+
+function demoEntry(): string {
+  return `<section class="demo-entry" aria-labelledby="demo-title">
+    <div class="demo-entry-heading">
+      <p class="eyebrow">Sample motion sketch</p>
+      <h1 id="demo-title" tabindex="-1">Edit a sample motion sketch</h1>
+    </div>
+    <div class="demo-deck">
+      <div class="demo-fields">
+        <label class="demo-sketch-name">Sketch name <input id="sketch-name" value="${escapeHtml(sketch.name)}" maxlength="48"></label>
+        <fieldset>
+          <legend>${sketch.properties.length} motion ${sketch.properties.length === 1 ? 'property' : 'properties'}</legend>
+          <div class="demo-property-grid">
+            ${sketch.properties.map((property, index) => `<label><span>Property name ${index + 1}</span><input data-field="property-name" data-property-id="${property.id}" value="${escapeHtml(property.name)}" maxlength="28"></label>`).join('')}
+          </div>
+        </fieldset>
+      </div>
+      ${previewPanel(true)}
+    </div>
+    <a class="demo-full-editor" href="#sketchpad">Open the keyframe editor</a>
+  </section>`;
+}
+
 function workbench(): string {
   const hasProperties = sketch.properties.length > 0;
   return `<section class="sketchpad-section" id="sketchpad" aria-labelledby="sketchpad-title">
     <div class="section-heading"><div><p class="eyebrow">The sketchpad</p><h2 id="sketchpad-title">Edit motion property values</h2></div><p>Drag keyframes sideways. Use arrow keys for 50 ms steps.</p></div>
-    <div class="workspace">
-      <div class="preview-panel">
-        <div class="preview-stage" aria-label="Motion preview">
-          <div class="horizon" aria-hidden="true"></div><div class="preview-object" aria-hidden="true"><i></i></div>
-          <span class="preview-time"><output id="current-time">${Math.round(currentTime)}</output> ms</span>
-        </div>
-        <div class="transport">
-          <button class="button primary compact" data-action="play">${playing ? 'Pause preview' : 'Play preview'}</button>
-          <button class="button secondary compact" data-action="restart">Restart preview</button>
-          <label>Playhead <input id="playhead-input" type="range" min="0" max="${sketch.duration}" value="${Math.round(currentTime)}" aria-label="Playhead in milliseconds"></label>
-        </div>
-        <ul class="current-values" aria-label="Current property values">${previewValues()}</ul>
-      </div>
+    <div class="workspace${demoMode ? ' demo-workspace' : ''}">
+      ${demoMode ? '' : previewPanel()}
       <div class="editor-panel">
         <div class="sketch-settings">
-          <label>Sketch name <input id="sketch-name" value="${escapeHtml(sketch.name)}" maxlength="48"></label>
+          ${demoMode ? '' : `<label>Sketch name <input id="sketch-name" value="${escapeHtml(sketch.name)}" maxlength="48"></label>`}
           <label>Duration <span class="input-with-unit"><input id="duration" type="number" min="200" max="30000" step="100" value="${sketch.duration}"><span>ms</span></span></label>
           <div class="file-actions"><label class="button secondary compact" for="import-file">Import JSON</label><input class="sr-only" id="import-file" type="file" accept="application/json,.json"><button class="text-button danger-text" data-action="clear-sketch">Clear sketch</button></div>
         </div>
         <div class="add-property"><span>Add property</span><button class="button secondary compact" data-action="add-property" data-kind="number" ${sketch.properties.length >= 8 ? 'disabled' : ''}>Add number property</button><button class="button secondary compact" data-action="add-property" data-kind="color" ${sketch.properties.length >= 8 ? 'disabled' : ''}>Add colour property</button><span class="property-count">${sketch.properties.length}/8</span></div>
-        ${hasProperties ? `<div class="rails">${sketch.properties.map(propertyRail).join('')}</div>${inspector()}` : `<div class="empty-state"><div class="empty-curve" aria-hidden="true"></div><h3>Add the first property</h3><p>Its keyframes and motion path will appear here.</p><div><button class="button primary compact" data-action="add-property" data-kind="number">Add number property</button><button class="button secondary compact" data-action="add-property" data-kind="color">Add colour property</button></div></div>`}
+        ${hasProperties ? `<div class="rails">${sketch.properties.map((property) => propertyRail(property, !demoMode)).join('')}</div>${inspector()}` : `<div class="empty-state"><div class="empty-curve" aria-hidden="true"></div><h3>Add the first property</h3><p>Its keyframes and motion path will appear here.</p><div><button class="button primary compact" data-action="add-property" data-kind="number">Add number property</button><button class="button secondary compact" data-action="add-property" data-kind="color">Add colour property</button></div></div>`}
       </div>
     </div>
     ${hasProperties ? exportPanel() : ''}
@@ -239,7 +267,7 @@ function howItWorks(): string {
 }
 
 function homePage(): string {
-  return `${header()}<main id="main">${hero()}${workbench()}${howItWorks()}</main>${footer()}`;
+  return `${header()}<main id="main">${demoMode ? demoEntry() : hero()}${workbench()}${howItWorks()}</main>${footer()}`;
 }
 
 function legalPage(kind: 'privacy' | 'terms'): string {

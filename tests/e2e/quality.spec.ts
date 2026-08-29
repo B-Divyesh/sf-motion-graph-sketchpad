@@ -110,3 +110,39 @@ test('sets route-specific metadata on every client route', async ({ page }) => {
     await expect(page.locator('meta[name="twitter:description"]')).toHaveAttribute('content', description);
   }
 });
+
+test('moves focus and announces history route changes', async ({ page }) => {
+  await page.goto('/?demo=1');
+  await page.locator('.site-header a[href="/privacy"]').click();
+  await expect(page).toHaveURL('/privacy');
+  const privacyHeading = page.getByRole('heading', { level: 1, name: 'Your sketch stays on this device' });
+  await expect(privacyHeading).toBeFocused();
+  await expect(page.locator('#route-status')).toHaveText('Your sketch stays on this device');
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\?demo=1$/);
+  const demoHeading = page.getByRole('heading', { level: 1, name: 'Edit a sample motion sketch' });
+  await expect(demoHeading).toBeFocused();
+  await expect(page.locator('#route-status')).toHaveText('Edit a sample motion sketch');
+  await expect(page.getByLabel('Sketch name')).toHaveValue('Lantern drift');
+});
+
+test('keeps the shared skeleton and legal links on every real route', async ({ page }) => {
+  for (const path of ['/', '/demo', '/privacy', '/terms']) {
+    await page.goto(path);
+    await expect(page.locator('.site-header')).toHaveCount(1);
+    await expect(page.locator('.site-footer')).toHaveCount(1);
+    await expect(page.locator('main')).toHaveCount(1);
+    await expect(page.locator('h1')).toHaveCount(1);
+    await expect(page.locator('.site-footer a[href="/privacy"]')).toHaveText('Privacy');
+    await expect(page.locator('.site-footer a[href="/terms"]')).toHaveText('Terms');
+  }
+});
+
+test('replaces preview travel with a final frame when motion is reduced', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/demo');
+  await page.getByRole('button', { name: 'Play preview' }).click();
+  await expect(page.locator('#current-time')).toHaveText('2400');
+  await expect(page.locator('#app-status')).toContainText('Motion is reduced in your settings.');
+});

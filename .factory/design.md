@@ -33,6 +33,7 @@ This is intentionally a single dark treatment. A bright theme would weaken the p
 ## Layout and interaction grammar
 
 - The first screen is an asymmetrical split. Job copy sits at left; an environmental illustration and live motion specimen occupy the wider right side.
+- Direct demo entry is product-first. It replaces the marketing hero with a compact editing deck that shows the sample name, all four property names, and preview controls before the full graph.
 - The product surface follows immediately. On desktop, property rails and the preview share a two-column workbench. On phones, the preview comes first and each rail becomes a horizontally scrollable strip.
 - Amber always means an editable moment: a keyframe, current playhead, or primary action. Cyan describes the path between moments.
 - Dragging a keyframe updates the preview and its visible time. Arrow keys move a focused keyframe by 50 ms; Shift + Arrow moves it by 250 ms.

@@ -78,10 +78,10 @@
   },
   {
     "id": "demo-four-property-sample",
-    "claim": "Loads a four-property motion sketch",
+    "claim": "One click opens the four-property Lantern drift sample in a working editor",
     "where": "landing action helper and README demo section",
     "test": "npm test -- --grep @claim:demo-four-property-sample",
-    "sandbox": "fresh browser context at /; one click on Try it with sample data enters ?demo=1, then assert the Lantern drift name and four named sample properties"
+    "sandbox": "fresh 390 x 844 browser at /; one click enters ?demo=1; without scrolling assert the banner, Lantern drift name, four named property inputs, and working preview are visible"
   },
   {
     "id": "five-standard-easings",

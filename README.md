@@ -8,7 +8,7 @@ Live site: <https://motion-graph-sketchpad.sociobot.in>
 
 ## Try the isolated demo
 
-Open <https://motion-graph-sketchpad.sociobot.in/?demo=1>. It loads the “Lantern drift” sample with four animated properties. Demo edits use memory only and disappear when you leave.
+Open <https://motion-graph-sketchpad.sociobot.in/?demo=1>. It opens the “Lantern drift” sample with four animated properties in a working editor. Demo edits use memory only and disappear when you leave.
 
 Use **Reset demo** to restore the sample. Use **Open my real sketch** to leave the demo.
 
